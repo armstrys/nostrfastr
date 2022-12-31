@@ -126,17 +126,50 @@ class RelayManager(relay_manager.RelayManager):
         super().__init__(*args, **kwargs)
         self.relays: dict[str, Relay] = {}
         self.message_pool = MessagePool(first_response_only=first_response_only)
+        self._is_connected = False
 
     def __iter__(self):
         return iter(self.relays.values())
     
     def connection(self, *args, **kwargs):
         return Connection(self, *args, **kwargs)
+    
+    def open_connections(self, ssl_options: dict=None):
+        for relay in self.relays.values():
+            threading.Thread(
+                target=relay.connect,
+                args=(ssl_options,),
+                name=f"{relay.url}-thread"
+            ).start()
+        time.sleep(1)
+        self.remove_closed_relays()
+        assert all(self.connection_statuses.values())
+        self._is_connected = True
+    
+    def close_connections(self):
+        for relay in self.relays.values():
+            if relay.is_connected:
+                relay.close()
+        assert not any(self.connection_statuses.values())
+        self._is_connected = False
+
+    def remove_closed_relays(self):
+        for url, connected in self.connection_statuses.items():
+            if not connected:
+                warnings.warn(
+                    f'{url} is not connected... removing relay.'
+                )
+                self.remove_relay(url=url)
 
     def add_relay(self, url: str, read: bool=True, write: bool=True, subscriptions={}):
         policy = RelayPolicy(read, write)
         relay = Relay(url, policy, self.message_pool, subscriptions)
         self.relays[url] = relay
+    
+    def remove_relay(self, url: str):
+        if self.relays[url].is_connected:
+            self.relays[url].close
+        self.relays.pop(url)
 
     @property
     def connection_statuses(self) -> dict:
