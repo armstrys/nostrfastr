@@ -5,4 +5,11 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://armstrys.github.io',
                 'git_url': 'https://github.com/armstrys/rebroadcastr',
                 'lib_path': 'rebroadcastr'},
-  'syms': {'rebroadcastr.core': {'rebroadcastr.core.foo': ('core.html#foo', 'rebroadcastr/core.py')}}}
+  'syms': { 'rebroadcastr.core': {'rebroadcastr.core.foo': ('core.html#foo', 'rebroadcastr/core.py')},
+            'rebroadcastr.nostr': { 'rebroadcastr.nostr.PrivateKey': ('nostr.html#privatekey', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PrivateKey.__init__': ('nostr.html#privatekey.__init__', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PrivateKey.from_hex': ('nostr.html#privatekey.from_hex', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PublicKey': ('nostr.html#publickey', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PublicKey.__init__': ('nostr.html#publickey.__init__', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PublicKey.from_hex': ('nostr.html#publickey.from_hex', 'rebroadcastr/nostr.py'),
+                                    'rebroadcastr.nostr.PublicKey.from_npub': ('nostr.html#publickey.from_npub', 'rebroadcastr/nostr.py')}}}
