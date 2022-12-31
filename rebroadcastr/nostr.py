@@ -41,6 +41,7 @@ import json
 import time
 import threading
 from threading import Lock
+from typing import Union
 from queue import Queue
 from nostr import message_pool
 from nostr import relay, relay_manager
@@ -81,7 +82,7 @@ class MessagePool(relay_manager.MessagePool):
 
 # %% ../nbs/00_nostr.ipynb 18
 class Connection:
-    def __init__(self, relay_or_manager: relay.Relay | relay_manager.RelayManager,
+    def __init__(self, relay_or_manager: Union[relay.Relay, relay_manager.RelayManager],
                  *args, **kwargs):
         self.relay_manager = relay_or_manager
         self.conn = self.relay_manager.open_connections(*args, **kwargs)
