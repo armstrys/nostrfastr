@@ -110,6 +110,10 @@ class Relay(relay.Relay):
                 name=f"{self.url}-thread"
         ).start()
     
+    def close(self):
+        if self.ws.sock is not None:
+            self.ws.close()
+    
     def close_connections(self):
         self.close()
     
@@ -136,20 +140,21 @@ class RelayManager(relay_manager.RelayManager):
     
     def open_connections(self, ssl_options: dict=None):
         for relay in self.relays.values():
-            threading.Thread(
-                target=relay.connect,
-                args=(ssl_options,),
-                name=f"{relay.url}-thread"
-            ).start()
-        time.sleep(1)
+            if not relay.is_connected:
+                threading.Thread(
+                    target=relay.connect,
+                    args=(ssl_options,),
+                    name=f"{relay.url}-thread"
+                ).start()
+        time.sleep(2)
         self.remove_closed_relays()
         assert all(self.connection_statuses.values())
         self._is_connected = True
     
     def close_connections(self):
         for relay in self.relays.values():
-            if relay.is_connected:
-                relay.close()
+            relay.close()
+
         assert not any(self.connection_statuses.values())
         self._is_connected = False
 
@@ -167,8 +172,7 @@ class RelayManager(relay_manager.RelayManager):
         self.relays[url] = relay
     
     def remove_relay(self, url: str):
-        if self.relays[url].is_connected:
-            self.relays[url].close
+        self.relays[url].close()
         self.relays.pop(url)
 
     @property

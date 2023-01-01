@@ -43,7 +43,6 @@ class Client:
                 event ids into the queue from multiple relays. This isn't fully
                 working yet. Defaults to False.
         """
-        self._is_connected = False
         self.ssl_options = ssl_options
         self.first_response_only = first_response_only
         self.set_account(public_key_hex=public_key_hex,
@@ -133,10 +132,8 @@ class Client:
         was_connected = self.relay_manager._is_connected
         for url in relays_to_add:
             self.relay_manager.add_relay(url=url)
-            if was_connected:
-                self.relay_manager[url].open_connections()
         if was_connected:
-            self.relay_manager.remove_closed_relays()
+            self.relay_manager.open_connections()
 
     def load_existing_event_ids(self):
         ids = pd.read_sql(sql='select id, url from events',
@@ -147,7 +144,7 @@ class Client:
             ids = ids['id'] + ':' + ids['url']
         self.relay_manager.message_pool._unique_objects = set(ids.to_list())
 
-# %% ../nbs/01_client.ipynb 12
+# %% ../nbs/01_client.ipynb 13
 @patch
 def __enter__(self: Client):
     """context manager to allow processing a connected client
