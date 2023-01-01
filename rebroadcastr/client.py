@@ -181,3 +181,138 @@ def connect(self: Client) -> None:
 def disconnect(self: Client) -> None:
     self.relay_manager.close_connections()
 
+
+# %% ../nbs/01_client.ipynb 16
+@patch
+def publish_subscription(self: Client, subscription_id: str, request_filters: Filters) -> None:
+    """publishes a request from a subscription id and a set of filters. Filters
+    can be defined using the request_by_custom_filter method or from a list of
+    preset filters (as of yet to be created):
+
+    Args:
+        subscription_id (str): subscription id to be sent to relau
+        request_filters (Filters): list of filters for a subscription
+    """
+    request = [ClientMessageType.REQUEST, subscription_id]
+    request.extend(request_filters.to_json_array())
+    message = json.dumps(request)
+    self.relay_manager.add_subscription(
+        subscription_id, request_filters
+        )
+    self.relay_manager.publish_message(message)
+    time.sleep(1)
+    self.get_notices_from_relay()
+
+
+# %% ../nbs/01_client.ipynb 18
+@patch
+def _event_handler(self: Client, event_msg: EventMessage) -> pd.DataFrame:
+    """a hidden method used to handle event outputs
+    from a relay. This can be overwritten to store events
+    to a db for example.
+
+    Args:
+        event_msg (EventMessage): Event message returned from relay
+    """
+    event = event_msg.event
+    if self.first_response_only:
+        object_id = event.id
+    else:
+        object_id = f'{event.id}:{event_msg.url}'
+    already_received = object_id in \
+                        self.relay_manager.message_pool._unique_objects
+    data = event.to_json_object()
+    data['tags'] = str(data['tags'])
+    data.update({'subscription_id': event_msg.subscription_id,
+                    'url': event_msg.url})
+    return pd.DataFrame.from_records(
+            [data]
+        )
+
+@patch
+def _notice_handler(self: Client, notice_msg: NoticeMessage):
+    """a hidden method used to handle notice outputs
+    from a relay. This can be overwritten to display notices
+    differently - should be warnings or errors?
+
+    Args:
+        notice_msg (NoticeMessage): Notice message returned from relay
+    """
+    warnings.warn(f'{notice_msg.url}:\n\t{notice_msg.content}')
+
+@patch
+def _eose_handler(self: Client, eose_msg: EndOfStoredEventsMessage):
+    """a hidden method used to handle notice outputs
+    from a relay. This can be overwritten to display notices
+    differently - should be warnings or errors?
+
+    Args:
+        notice_msg (EndOfStoredEventsMessage): Message from relay
+            to signify the last event in a subscription has been
+            provided.
+    """
+    print(f'end of subscription: {eose_msg.subscription_id} received.')
+
+@patch
+def get_events_pool(self: Client):
+    """calls the _event_handler method on all events from relays
+    """
+    self.events = []
+    while self.relay_manager.message_pool.has_events():
+        event_msg = self.relay_manager.message_pool.get_event()
+        self.events.append(
+            self._event_handler(event_msg=event_msg)
+        )
+    if len(self.events) > 0:
+        event_df = pd.concat(self.events)
+        print(f'writing {len(event_df)} event(s)')
+        with self.db_conn as con:
+            event_df.to_sql(name=self.events_table_name, con=con,
+                            if_exists='append', index=False,)
+        
+@patch
+def get_notices_from_relay(self: Client):
+    """calls the _notice_handler method on all notices from relays
+    """
+    while self.relay_manager.message_pool.has_notices():
+        notice_msg = self.relay_manager.message_pool.get_notice()
+        self._notice_handler(notice_msg=notice_msg)
+
+@patch
+def get_eose_from_relay(self: Client):
+    """calls the _eose_handler end of subsribtion events from relays
+    """
+    while self.relay_manager.message_pool.has_eose_notices():
+        eose_msg = self.relay_manager.message_pool.get_eose_notice()
+        self._eose_handler(eose_msg=eose_msg)
+
+
+@patch
+def publish_event(self: Client, event: Event) -> None:
+    """publish an event and immediately checks for a notice
+    from the relay in case of an invalid event
+
+    Args:
+        event (Event): _description_
+    """
+    event.sign(self.private_key.hex())
+    message = json.dumps([ClientMessageType.EVENT, event.to_json_object()])
+    self.relay_manager.publish_message(message)
+    time.sleep(1)
+    self.get_notices_from_relay()
+
+@patch
+def request_by_custom_filter(self: Client, subscription_id, **filter_kwargs) -> None:
+    """make a relay request from kwargs for a single Filter object
+    as defined in python-nostr.filter.Filter
+
+    Args:
+        subscription_id (_type_): _description_
+    Kwargs to follow python-nostr.filter.Filter
+    """
+    custom_request_filters = Filters([Filter(**filter_kwargs)])
+    self.publish_request(
+        subscription_id=subscription_id,
+        request_filters=custom_request_filters
+    )
+

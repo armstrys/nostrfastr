@@ -120,6 +120,7 @@ class Relay(relay.Relay):
     def connection(self, *args, **kwargs):
         return Connection(self, *args, **kwargs)
 
+
 # %% ../nbs/00_nostr.ipynb 23
 from nostr import relay_manager
 from nostr.relay import RelayPolicy
