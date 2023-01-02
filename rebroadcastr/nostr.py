@@ -60,9 +60,6 @@ class MessagePool(relay_manager.MessagePool):
         self._unique_objects: set = set()
         self.lock: Lock = Lock()
 
-    def __init__(self, first_response_only: bool = True) -> None:
-        self.first_response_only = first_response_only
-
     def _process_message(self, message: str, url: str):
         message_json = json.loads(message)
         message_type = message_json[0]
@@ -88,8 +85,9 @@ class Connection:
         self.conn = self.relay_manager.open_connections(*args, **kwargs)
     def __enter__(self):
         return self.conn
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, ex_type, ex_value, traceback):
         self.relay_manager.close_connections()
+        return False
 
 
 class Relay(relay.Relay):
@@ -121,11 +119,11 @@ class Relay(relay.Relay):
         return Connection(self, *args, **kwargs)
 
 
-# %% ../nbs/00_nostr.ipynb 23
+# %% ../nbs/00_nostr.ipynb 25
 from nostr import relay_manager
 from nostr.relay import RelayPolicy
 
-# %% ../nbs/00_nostr.ipynb 25
+# %% ../nbs/00_nostr.ipynb 27
 class RelayManager(relay_manager.RelayManager):
     def __init__(self, first_response_only: bool = True,  *args, **kwargs):
         super().__init__(*args, **kwargs)
