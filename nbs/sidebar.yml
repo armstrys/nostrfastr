@@ -1,0 +1,7 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_intro_to_nostr.ipynb
+      - 01_client.ipynb
+      - 02_sentinel_client.ipynb
