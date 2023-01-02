@@ -2,8 +2,8 @@ project:
   output-dir: _docs
 
 website:
-  title: "rebroadcastr"
-  site-url: "https://armstrys.github.io/rebroadcastr"
-  description: "a basic nostr client that rebroadcasts user events to a set list of relays if they are not present"
+  title: "nostrfastr"
+  site-url: "https://armstrys.github.io/nostrfastr"
+  description: "a basic nostr client class built in the nbdev framework to get people started faster with nostr"
   repo-branch: main
-  repo-url: "https://github.com/armstrys/rebroadcastr"
+  repo-url: "https://github.com/armstrys/nostrfastr"
