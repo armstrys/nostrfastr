@@ -30,18 +30,34 @@ accessible to a wider audience.
 
 ## Install
 
-> this is not yet implemented, but will be coming soon
+> pip install is not yet implemented, but will be coming soon
 
 ``` sh
-pip install rebroadcastr
+pip install nostrfastr
 ```
 
-## How to use (TO-DO)
+or alternatively, clone the github repositor [and refer to this
+guide](https://nbdev.fast.ai/tutorials/tutorial.html) to get started
+working in nbdev.
 
-Fill me in please! Don’t forget code examples:
+## How to use
 
 ``` python
-1+1
+from nostrfastr.client import Client
 ```
 
-    2
+``` python
+with Client(relay_urls=['wss://relay.damus.io']) as client:
+    print('Are we connected?')
+    print('\t', client.relay_manager.connection_statuses)
+print('Are we connected?')
+print('\t', client.relay_manager.connection_statuses)
+```
+
+    logged in as public key
+        bech32: npub1s7j2zffnrck072jxztvp35y94p9a46gus7kz8ty4jnypsmggl2rq5tkyy0
+        hex: 87a4a125331e2cff2a4612d818d085a84bdae91c87ac23ac9594c8186d08fa86
+    Are we connected?
+         {'wss://relay.damus.io': True}
+    Are we connected?
+         {'wss://relay.damus.io': False}
