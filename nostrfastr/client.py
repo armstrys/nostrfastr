@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['Client']
 
-# %% ../nbs/01_client.ipynb 4
+# %% ../nbs/01_client.ipynb 6
 import warnings
 import json
 import time
@@ -23,7 +23,7 @@ from .nostr import PrivateKey, PublicKey,\
 
 from fastcore.utils import patch
 
-# %% ../nbs/01_client.ipynb 6
+# %% ../nbs/01_client.ipynb 8
 class Client:
     def __init__(self, public_key_hex: str = None, private_key_hex: str = None,
                  db_name: str = 'nostr-data', relay_urls: list = None, ssl_options: dict = {},
@@ -157,7 +157,7 @@ class Client:
             ids = ids['id'] + ':' + ids['url']
         self.relay_manager.message_pool._unique_objects = set(ids.to_list())
 
-# %% ../nbs/01_client.ipynb 14
+# %% ../nbs/01_client.ipynb 16
 @patch
 def __enter__(self: Client):
     """context manager to allow processing a connected client
@@ -195,11 +195,11 @@ def disconnect(self: Client) -> None:
     self.relay_manager.close_connections()
 
 
-# %% ../nbs/01_client.ipynb 22
+# %% ../nbs/01_client.ipynb 23
 import uuid
 from typing import Union
 
-# %% ../nbs/01_client.ipynb 23
+# %% ../nbs/01_client.ipynb 24
 @patch
 def publish_subscription(self: Client, filters: Union[Filter, Filters],
                          subscription_id: str = str(uuid.uuid4())) -> None:
@@ -244,7 +244,7 @@ def get_notices_from_relay(self: Client):
         self._notice_handler(notice_msg=notice_msg)
 
 
-# %% ../nbs/01_client.ipynb 27
+# %% ../nbs/01_client.ipynb 28
 @patch
 def _event_handler(self: Client, event_msg: EventMessage) -> pd.DataFrame:
     """a hidden method used to handle event outputs
@@ -289,7 +289,7 @@ def insert_event_to_database(self: Client, event_msg: EventMessage):
     with self.db_conn as con:
         con.execute(sql)
 
-# %% ../nbs/01_client.ipynb 33
+# %% ../nbs/01_client.ipynb 34
 @patch
 def _eose_handler(self: Client, eose_msg: EndOfStoredEventsMessage):
     """a hidden method used to handle notice outputs
@@ -312,7 +312,7 @@ def get_eose_from_relay(self: Client):
         self._eose_handler(eose_msg=eose_msg)
 
 
-# %% ../nbs/01_client.ipynb 35
+# %% ../nbs/01_client.ipynb 36
 @patch
 def publish_event(self: Client, event: Event) -> None:
     """publish an event and immediately checks for a notice
@@ -344,7 +344,7 @@ def check_event_pubkey(self: Client, event: Event):
     else:
         pass
 
-# %% ../nbs/01_client.ipynb 39
+# %% ../nbs/01_client.ipynb 40
 @patch
 def filter_events_by_id(self: Client, ids: Union[str,list]) -> Filter:
     """build a filter from event ids

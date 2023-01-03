@@ -40,7 +40,7 @@ class PublicKey(key.PublicKey):
     def from_hex(cls, hex: str) -> 'PrivateKey':
         return cls(bytes.fromhex(hex))
 
-# %% ../nbs/00_intro_to_nostr.ipynb 37
+# %% ../nbs/00_intro_to_nostr.ipynb 39
 import json
 import time
 import warnings
@@ -55,7 +55,7 @@ from nostr.message_pool import EventMessage, NoticeMessage, EndOfStoredEventsMes
 from nostr.message_type import RelayMessageType
 from nostr.event import Event
 
-# %% ../nbs/00_intro_to_nostr.ipynb 39
+# %% ../nbs/00_intro_to_nostr.ipynb 41
 class MessagePool(relay_manager.MessagePool):
     def __init__(self, first_response_only: bool = True):
         self.first_response_only = first_response_only
@@ -82,7 +82,7 @@ class MessagePool(relay_manager.MessagePool):
                     self._unique_objects.add(event.id)
 
 
-# %% ../nbs/00_intro_to_nostr.ipynb 40
+# %% ../nbs/00_intro_to_nostr.ipynb 42
 class Connection:
     def __init__(self, relay_or_manager: Union[relay.Relay, relay_manager.RelayManager],
                  *args, **kwargs):
@@ -124,7 +124,7 @@ class Relay(relay.Relay):
         return Connection(self, *args, **kwargs)
 
 
-# %% ../nbs/00_intro_to_nostr.ipynb 41
+# %% ../nbs/00_intro_to_nostr.ipynb 43
 class RelayManager(relay_manager.RelayManager):
     def __init__(self, first_response_only: bool = True,  *args, **kwargs):
         super().__init__(*args, **kwargs)
