@@ -108,9 +108,6 @@ class Client:
         if public_key_hex != self.private_key.public_key.hex():
             self.public_key = PublicKey.from_hex(public_key_hex)
             self.private_key = None
-        print(f'logged in as public key\n'
-              f'\tbech32: {self.public_key.bech32()}\n'
-              f'\thex: {self.public_key.hex()}')
     
     def _request_private_key_hex(self) -> str:
         """method to request private key. this method should be overwritten
@@ -344,7 +341,7 @@ def check_event_pubkey(self: Client, event: Event):
     else:
         pass
 
-# %% ../nbs/01_client.ipynb 40
+# %% ../nbs/01_client.ipynb 42
 @patch
 def filter_events_by_id(self: Client, ids: Union[str,list]) -> Filter:
     """build a filter from event ids
@@ -478,8 +475,16 @@ def event_channel_metadata(self: Client) -> Event:
     raise NotImplementedError()
 
 @patch
-def event_encrypted_message(self: Client) -> Event:
+def event_encrypted_message(self: Client, recipient_hex: str, message: str) -> Event:
     warnings.warn('''the current implementation of messages should be used with caution
                     see https://github.com/nostr-protocol/nips/issues/107''')
-    raise NotImplementedError()
+    encrypted_message = \
+        self.private_key.encrypt_message(message=message,
+                                         public_key_hex=recipient_hex)
+    event = Event(public_key=self.public_key.hex(),
+                  kind=EventKind.ENCRYPTED_DIRECT_MESSAGE,
+                  content=encrypted_message,
+                  tags=[['p'] + [recipient_hex]],
+                  created_at=int(time.time()))
+    return event
 
