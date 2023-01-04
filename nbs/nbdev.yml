@@ -4,6 +4,6 @@ project:
 website:
   title: "nostrfastr"
   site-url: "https://armstrys.github.io/nostrfastr"
-  description: "a basic nostr client class built in the nbdev framework to get people started faster with nostr"
+  description: "Getting users into nostr, fastr. A basic nostr `Client` class built in the nbdev (fast) framework to get people started nostr."
   repo-branch: main
   repo-url: "https://github.com/armstrys/nostrfastr"
