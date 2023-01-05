@@ -8,7 +8,7 @@ from .client import Client
 import time
 
 # %% ../nbs/03_notifyr.ipynb 6
-def send_nostr_message(notifyr_client: Client, message: str) -> None:
+def send_nostr_message(notifyr_client: Client, message: str, recipient_pubkey_hex: str) -> None:
     """a simple function that takes a client and a message and
     sends the message to the client pubkey from the client pubkey
  
@@ -20,7 +20,6 @@ def send_nostr_message(notifyr_client: Client, message: str) -> None:
        A message that will be encrypted and sent
     """
     with notifyr_client:
-        recipient_pubkey_hex = notifyr_client.public_key.hex()
         event = notifyr_client.event_encrypted_message(recipient_hex=recipient_pubkey_hex,
                                                        message=message)
         notifyr_client.publish_event(event)
@@ -29,6 +28,7 @@ def send_nostr_message(notifyr_client: Client, message: str) -> None:
 
 # %% ../nbs/03_notifyr.ipynb 8
 import keyring
+from keyring.errors import NoKeyringError
 from .nostr import PrivateKey, PublicKey
 
 # %% ../nbs/03_notifyr.ipynb 10
@@ -41,8 +41,8 @@ def set_private_key(notifyr_privkey_hex: str) -> None:
        nostr hex private key
    """
    return keyring.set_password(service_name='nostr',
-                               username='notifyr',
-                               password=notifyr_privkey_hex)
+                                username='notifyr',
+                                password=notifyr_privkey_hex)
 
 def get_private_key() -> str:
     """get the nostr hex private key from the computer key ring
@@ -64,8 +64,11 @@ def delete_private_key() -> None:
                                    username='notifyr')
 
 
-# %% ../nbs/03_notifyr.ipynb 16
-def notifyr(func):
+# %% ../nbs/03_notifyr.ipynb 19
+import functools
+
+# %% ../nbs/03_notifyr.ipynb 20
+def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = None):
    """A decorator that will set a nostr private key to `func.notifyr_privkey_hex
    and use that key to send an encrypted message to it's own public key on the start
    and termination of the decorated function. The output will send whether the function
@@ -86,36 +89,55 @@ def notifyr(func):
    e
        if the function fails, else returns the function result
    """
-
    notifyr_privkey_hex = get_private_key()
    if notifyr_privkey_hex is None:
-      notifyr_privkey_hex = PrivateKey.hex()
+      notifyr_privkey_hex = PrivateKey().hex()
    set_private_key(notifyr_privkey_hex)
    assert get_private_key() == notifyr_privkey_hex
+   if relay_urls is None:
+      relay_urls = ['wss://relay.damus.io',
+                    'wss://brb.io']
+   if recipient_pubkey is None:
+      recipient_pubkey_hex = \
+         PrivateKey.from_hex(notifyr_privkey_hex).public_key.hex()
+   else:
+      if recipient_pubkey.startswith('npub'):
+         recipient_pubkey_hex = \
+            PublicKey.from_npub(recipient_pubkey).hex()
+      else:
+         recipient_pubkey_hex = recipient_pubkey
 
-   def loud_process(*args,**kwargs):
-      notifyr_privkey_hex = get_private_key()
+   if func is None:
+        return lambda func: notifyr(func=func,
+                                    recipient_pubkey=recipient_pubkey,
+                                    relay_urls=relay_urls)
+
+   @functools.wraps(func)
+   def notifier(*args,**kwargs):
       notifyr_client = Client(private_key_hex=notifyr_privkey_hex,
-                              relay_urls=['wss://relay.damus.io',
-                                          'wss://brb.io'])
+                              relay_urls=relay_urls)
       notifyr_pubkey_hex = notifyr_client.public_key.hex()
       function_name = func.__name__
-      message = 'process started!'
-      send_nostr_message(notifyr_client=notifyr_client,
+      message = f'**process name**: {function_name} started!'
+      send_nostr_message(recipient_pubkey_hex=recipient_pubkey_hex,
+                         notifyr_client=notifyr_client,
                          message=message)
       try:
          result = func(*args,**kwargs)
-         message = f'**process**: {function_name}\n' \
-                   f'**finished** with result of type:\n\t{type(result)}'
+         message = f'**process name**: {function_name}\n' \
+                   f'**finished** - preview of result:\n' \
+                   f'-----------------------------\n\n'\
+                   f'{str(result)[:100]}'
       except Exception as e:
          result = e
          message = f'**process name**: {function_name}\n' \
                    f'**failed** with error:\n\t{type(e).__name__}: {e}'
-      send_nostr_message(notifyr_client=notifyr_client,
+      send_nostr_message(recipient_pubkey_hex=recipient_pubkey_hex,
+                         notifyr_client=notifyr_client,
                          message=message)
       if issubclass(type(result), Exception):
          raise result
       else:
          return result
-   loud_process.notifyr_private_key = notifyr_privkey_hex
-   return loud_process
+   notifier.notifyr_private_key = notifyr_privkey_hex
+   return notifier

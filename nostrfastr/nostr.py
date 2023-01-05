@@ -21,6 +21,10 @@ class PrivateKey(key.PrivateKey):
         sk = secp256k1.PrivateKey(self.raw_secret)
         self.public_key = PublicKey(sk.pubkey.serialize()[1:])
 
+    def __repr__(self):
+        pubkey = self.public_key.bech32()
+        return f'PrivateKey({pubkey[:10]}...{pubkey[-10:]})'
+
     @classmethod
     def from_hex(cls, hex: str) -> 'PrivateKey':
         return cls(bytes.fromhex(hex))
@@ -28,6 +32,10 @@ class PrivateKey(key.PrivateKey):
 class PublicKey(key.PublicKey):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        pubkey = self.bech32()
+        return f'PublicKey({pubkey[:10]}...{pubkey[-10:]})'
     
     @classmethod
     def from_npub(cls, npub: str):
