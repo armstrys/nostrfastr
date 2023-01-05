@@ -152,3 +152,5 @@ checklink/cookies.txt
 
 # nostr-relay
 nostr-relay/nostr.sqlite3
+nostr-relay/nostr.sqlite3-shm
+nostr-relay/nostr.sqlite3-wal
