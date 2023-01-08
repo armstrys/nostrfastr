@@ -3,7 +3,11 @@
 # %% auto 0
 __all__ = ['guess_bech32', 'guess_hex', 'hex_chars', 'npub_chars', 'vanity_notifyr', 'expected_performance', 'gen_vanity_pubkey']
 
-# %% ../nbs/04_vanity.ipynb 3
+# %% ../nbs/04_vanity.ipynb 4
+from .nostr import PrivateKey
+from .notifyr import notifyr
+
+# %% ../nbs/04_vanity.ipynb 7
 import time
 import secrets
 import secp256k1

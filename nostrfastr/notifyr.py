@@ -126,6 +126,81 @@ def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = Non
    e
        if the function fails, else returns the function result
    """
+   notifyr_privkey_hex = get_private_key()
+   if notifyr_privkey_hex is None:
+      notifyr_privkey_hex = PrivateKey().hex()
+   set_private_key(notifyr_privkey_hex)
+   assert get_private_key() == notifyr_privkey_hex
+   if relay_urls is None:
+      relay_urls = ['wss://relay.damus.io',
+                    'wss://brb.io']
+   if recipient_pubkey is None:
+      recipient_pubkey_hex = \
+         PrivateKey.from_hex(notifyr_privkey_hex).public_key.hex()
+   else:
+      if recipient_pubkey.startswith('npub'):
+         recipient_pubkey_hex = \
+            PublicKey.from_npub(recipient_pubkey).hex()
+      else:
+         recipient_pubkey_hex = recipient_pubkey
+
+   if func is None:
+        return lambda func: notifyr(func=func,
+                                    recipient_pubkey=recipient_pubkey,
+                                    relay_urls=relay_urls)
+
+   @functools.wraps(func)
+   def notifier(*args,**kwargs):
+      notifyr_client = Client(private_key_hex=notifyr_privkey_hex,
+                              relay_urls=relay_urls)
+      notifyr_pubkey_hex = notifyr_client.public_key.hex()
+      function_name = func.__name__
+      message = f'**process name**: {function_name} started!'
+      send_nostr_message(recipient_pubkey_hex=recipient_pubkey_hex,
+                         notifyr_client=notifyr_client,
+                         message=message)
+      try:
+         result = func(*args,**kwargs)
+         message = f'**process name**: {function_name}\n' \
+                   f'**finished** - preview of result:\n' \
+                   f'-----------------------------\n\n'\
+                   f'{str(result)[:100]}'
+      except Exception as e:
+         result = e
+         message = f'**process name**: {function_name}\n' \
+                   f'**failed** with error:\n\t{type(e).__name__}: {e}'
+      send_nostr_message(recipient_pubkey_hex=recipient_pubkey_hex,
+                         notifyr_client=notifyr_client,
+                         message=message)
+      if issubclass(type(result), Exception):
+         raise result
+      else:
+         return result
+   notifier.notifyr_private_key = notifyr_privkey_hex
+   return notifier
+
+# %% ../nbs/03_notifyr.ipynb 23
+def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = None):
+   """A decorator that will set a nostr private key to `func.notifyr_privkey_hex
+   and use that key to send an encrypted message to it's own public key on the start
+   and termination of the decorated function. The output will send whether the function
+   runs completely or ends in an error with an informative message.
+
+   Parameters
+   ----------
+   func : function
+       the function to be decorated
+
+   Returns
+   -------
+   function
+       the decorated function
+
+   Raises
+   ------
+   e
+       if the function fails, else returns the function result
+   """
    notifyr_privkey_hex = get_notifyr_privkey()
    if relay_urls is None:
       relay_urls = ['wss://relay.damus.io',
