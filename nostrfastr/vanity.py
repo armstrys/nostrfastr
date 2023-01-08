@@ -256,46 +256,6 @@ def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
     PrivateKey
         returns a private key object
     """
-    pubkey = ''
-    if style == 'npub':
-        npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
-        if not all(c in npub_chars for c in startswith):
-            raise ValueError(f'character of selection not '
-                              'in npub pattern ({npub_chars})')
-        startswith = f'npub1{startswith}'
-    else:
-        hex_chars = 'abcdef0123456789'
-        if not all(c in hex_chars for c in startswith):
-            raise ValueError(f'character of selection not in '
-                              'hex pattern ({hex_chars})')
-    while not pubkey.startswith(startswith):
-        privkey = PrivateKey()
-        if style == 'npub':
-            pubkey = privkey.public_key.bech32()
-        else:
-            pubkey = privkey.public_key.hex()
-    return privkey
-
-# %% ../nbs/04_vanity.ipynb 27
-def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
-    """randomly generate private keys until one matches the desire
-    startswith for an npub or hex
-
-    Parameters
-    ----------
-    startswith : str
-        characters that the public key should start with. More chars
-        means longer run time
-    style : str, optional
-        'npub' or 'hex' - npub is more commonly displayed on apps
-        while hex is the true base private key with no encoding,
-        by default 'hex'
-
-    Returns
-    -------
-    PrivateKey
-        returns a private key object
-    """
     pubkey = None
     if style == 'npub':
         if not all(c in npub_chars for c in startswith):
@@ -321,5 +281,5 @@ def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
             privkey_hex, pubkey = guess_hex(startswith=startswith)
     return PrivateKey.from_hex(privkey_hex)
 
-# %% ../nbs/04_vanity.ipynb 36
+# %% ../nbs/04_vanity.ipynb 35
 vanity_notifyr = notifyr(gen_vanity_pubkey)
