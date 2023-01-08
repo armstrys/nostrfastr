@@ -3,7 +3,6 @@ on:  [workflow_dispatch, pull_request, push]
 
 jobs:
   test:
-    runs-on: linux-latest
+    runs-on: macos-latest
     steps: 
-       - run: sudo apt-get install -y kwalletmanager
        - uses: fastai/workflows/nbdev-ci@master
