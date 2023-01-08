@@ -3,11 +3,11 @@
 # %% auto 0
 __all__ = ['guess_bech32', 'guess_hex', 'hex_chars', 'npub_chars', 'vanity_notifyr', 'expected_performance', 'gen_vanity_pubkey']
 
-# %% ../nbs/04_vanity.ipynb 4
+# %% ../nbs/04_vanity.ipynb 3
 from .nostr import PrivateKey
 from .notifyr import notifyr
 
-# %% ../nbs/04_vanity.ipynb 7
+# %% ../nbs/04_vanity.ipynb 5
 import time
 import secrets
 import secp256k1
@@ -17,7 +17,7 @@ from .nostr import PrivateKey
 from .notifyr import notifyr
 from nostr import bech32
 
-# %% ../nbs/04_vanity.ipynb 4
+# %% ../nbs/04_vanity.ipynb 6
 def _guess_bytes():
     privkey_bytes = secrets.token_bytes(32) 
     sk = secp256k1.PrivateKey(privkey_bytes)
@@ -32,7 +32,7 @@ def _make_bech32(pubkey_bytes):
 def _make_hex(pubkey_bytes):
     return pubkey_bytes.hex()
 
-# %% ../nbs/04_vanity.ipynb 6
+# %% ../nbs/04_vanity.ipynb 8
 def _guess_vanity(make_format, startswith=''):
     privkey_bytes, pubkey_bytes = _guess_bytes()
     pubkey_hex = make_format(pubkey_bytes)
@@ -42,12 +42,12 @@ def _guess_vanity(make_format, startswith=''):
         return None, None
 
 
-# %% ../nbs/04_vanity.ipynb 7
+# %% ../nbs/04_vanity.ipynb 9
 guess_bech32 = functools.partial(_guess_vanity, make_format=_make_bech32)
 guess_hex = functools.partial(_guess_vanity, make_format=_make_hex)
 
 
-# %% ../nbs/04_vanity.ipynb 11
+# %% ../nbs/04_vanity.ipynb 13
 def _time_guess(guesser):
     """get a timed assessment of a guess
 
@@ -88,10 +88,10 @@ def _get_guess_time(guesser, n_guesses=1e4):
     t = sum([_time_guess(guesser) for _ in range(n_guesses)]) / n_guesses
     return t
 
-# %% ../nbs/04_vanity.ipynb 15
+# %% ../nbs/04_vanity.ipynb 17
 import math
 
-# %% ../nbs/04_vanity.ipynb 16
+# %% ../nbs/04_vanity.ipynb 18
 def _expected_guesses_by_char(options: Union[str,list], num_char: int) -> float:
     """return an average number of guesses it would take to guess
     a pattern based on the number of characters in the pattern and
@@ -158,7 +158,7 @@ def _expected_time(options: Union[str,list], num_char: int, time_per_guess: floa
     return time_seconds
 
 
-# %% ../nbs/04_vanity.ipynb 17
+# %% ../nbs/04_vanity.ipynb 19
 hex_chars = 'abcdef0123456789'
 npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
 
@@ -213,7 +213,7 @@ def _average_time_by_char(options: Union[str,list], time_per_guess: float) -> No
 
 
 
-# %% ../nbs/04_vanity.ipynb 21
+# %% ../nbs/04_vanity.ipynb 23
 def expected_performance():
     print(
         '''This is a random guessing process - estimations are an average, but the actual
@@ -236,7 +236,47 @@ def expected_performance():
 
     
 
-# %% ../nbs/04_vanity.ipynb 24
+# %% ../nbs/04_vanity.ipynb 26
+def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
+    """randomly generate private keys until one matches the desire
+    startswith for an npub or hex
+
+    Parameters
+    ----------
+    startswith : str
+        characters that the public key should start with. More chars
+        means longer run time
+    style : str, optional
+        'npub' or 'hex' - npub is more commonly displayed on apps
+        while hex is the true base private key with no encoding,
+        by default 'hex'
+
+    Returns
+    -------
+    PrivateKey
+        returns a private key object
+    """
+    pubkey = ''
+    if style == 'npub':
+        npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
+        if not all(c in npub_chars for c in startswith):
+            raise ValueError(f'character of selection not '
+                              'in npub pattern ({npub_chars})')
+        startswith = f'npub1{startswith}'
+    else:
+        hex_chars = 'abcdef0123456789'
+        if not all(c in hex_chars for c in startswith):
+            raise ValueError(f'character of selection not in '
+                              'hex pattern ({hex_chars})')
+    while not pubkey.startswith(startswith):
+        privkey = PrivateKey()
+        if style == 'npub':
+            pubkey = privkey.public_key.bech32()
+        else:
+            pubkey = privkey.public_key.hex()
+    return privkey
+
+# %% ../nbs/04_vanity.ipynb 27
 def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
     """randomly generate private keys until one matches the desire
     startswith for an npub or hex
@@ -281,5 +321,5 @@ def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
             privkey_hex, pubkey = guess_hex(startswith=startswith)
     return PrivateKey.from_hex(privkey_hex)
 
-# %% ../nbs/04_vanity.ipynb 33
+# %% ../nbs/04_vanity.ipynb 36
 vanity_notifyr = notifyr(gen_vanity_pubkey)
