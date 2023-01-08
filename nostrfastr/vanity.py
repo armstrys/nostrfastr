@@ -2,17 +2,17 @@
 
 # %% auto 0
 __all__ = ['hex_chars', 'npub_chars', 'vanity_notifyr', 'guess_bytes', 'guess_bech32', 'guess_hex', 'time_guess',
-           'get_guess_rate', 'expected_guesses_by_char', 'expected_time', 'expected_chars_by_time',
+           'get_guess_rate', 'expected_guesses_by_char', 'expected_chars_by_time', 'expected_time',
            'average_char_by_time', 'average_time_by_char', 'expected_performance', 'gen_vanity_pubkey']
 
 # %% ../nbs/04_vanity.ipynb 3
-from .nostr import PrivateKey
-from .notifyr import notifyr
-from nostr import bech32
 import time
 import secrets
 import secp256k1
-from numba import jit
+from typing import Union
+from .nostr import PrivateKey
+from .notifyr import notifyr
+from nostr import bech32
 
 # %% ../nbs/04_vanity.ipynb 5
 def guess_bytes():
@@ -55,35 +55,93 @@ def get_guess_rate(guesser, n_guesses=1e4):
     guesses_per_second = 1 / t
     return guesses_per_second
 
-# %% ../nbs/04_vanity.ipynb 12
+# %% ../nbs/04_vanity.ipynb 13
 import math
 
-# %% ../nbs/04_vanity.ipynb 13
-hex_chars = 'abcdef0123456789'
-npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
-
-
 # %% ../nbs/04_vanity.ipynb 14
-def expected_guesses_by_char(p_char, num_char):
-    return (p_char ** -num_char - 1)/ (1 - p_char)
+def expected_guesses_by_char(options: Union[str,list], num_char: int) -> float:
+    """return an average number of guesses it would take to guess
+    a pattern based on the number of characters in the pattern and
+    the number of character options in the random output
 
-def expected_time(num_char, options, time_per_guess):
+    Parameters
+    ----------
+    options : list or str
+        a set of characters as a str or list that are options for
+        guessing
+    num_char : int
+        the number of characters in the pattern
+
+    Returns
+    -------
+    float
+        the expected number of guesses required to match the pattern
+    """
     p = 1 / len(options)
-    n_guess = expected_guesses_by_char(p, num_char)
+    return (p ** -num_char - 1)/ (1 - p)
+
+def expected_chars_by_time(options: Union[str,list], num_guesses: int) -> float:
+    """the length of pattern you might expect to be able to guess given a
+    certain number of guesses.
+
+    Parameters
+    ----------
+    options : list or str
+        a set of characters as a str or list that are options for
+        guessing
+    num_guesses : int
+        the total number of guesses at a pattern
+
+    Returns
+    -------
+    float
+        th
+    """
+    p = 1 / len(options)
+    n = - math.log(1 + (num_guesses * (1 - p))) / math.log(p)
+    return n
+
+def expected_time(options: Union[str,list], num_char: int, time_per_guess: float) -> float:
+    """the expected amount of time it would take to guess a pattern with a certain
+    length based on the average time per guess and the character options
+
+    Parameters
+    ----------
+    options : list or str
+        a set of characters as a str or list that are options for
+        guessing
+    num_char : int
+        the number of characters in the pattern
+    time_per_guess : float
+        averge time per guess in seconds
+
+    Returns
+    -------
+    float
+        the expected amount of time needed to guess the pattern
+    """
+    n_guess = expected_guesses_by_char(options, num_char)
     time_seconds = n_guess * time_per_guess
     return time_seconds
-
-def expected_chars_by_time(p_char, num_guesses):
-    n = - math.log(1 + (num_guesses * (1 - p_char))) / math.log(p_char)
-    return n
 
 
 # %% ../nbs/04_vanity.ipynb 15
 hex_chars = 'abcdef0123456789'
 npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
 
-def average_char_by_time(options: str, time_per_guess: float):
-    p = 1 / len(options)
+def average_char_by_time(options: Union[str,list], time_per_guess: float) -> None:
+    """print an average number of characters you would expect to be
+    able to guess for certain time periods based on character options
+    and the average time per guess
+
+    Parameters
+    ----------
+    options : list or str
+        a set of characters as a str or list that are options for
+        guessing
+    time_per_guess : float
+        the average time elapsed per guess
+    """
     seconds_in_month = 60 * 60 * 24 * 30.5
     seconds_in_day = 60 * 60 * 24
     seconds_in_hour = 60 * 60
@@ -98,16 +156,26 @@ def average_char_by_time(options: str, time_per_guess: float):
     guesses = [guesses_per_second, guesses_per_minute,\
                guesses_per_hour, guesses_per_day, guesses_per_month]
 
-    expected_chars = [expected_chars_by_time(p, g) for g in guesses]
+    expected_chars = [expected_chars_by_time(options, g) for g in guesses]
     results = zip(['one second', 'one minute', 'one hour', 'one day', 'one month'],
                    expected_chars)
     for t, c in results:
         print(f'In {t} you can expect to get {c} characters on average')
 
-def average_time_by_char(num_chars, time_per_guess):
+def average_time_by_char(options: Union[str,list], time_per_guess: float) -> None:
+    """print an average elapsed time for a range of pattern lengths
+
+    Parameters
+    ----------
+    options : Union[str,list]
+        a set of characters as a str or list that are options for
+        guessing
+    time_per_guess : float
+        the average time elapsed per guess
+    """
     for n in range(20):
         n += 1
-        t = expected_time(n, num_chars, time_per_guess)
+        t = expected_time(options, n, time_per_guess)
         print(f'{n} characters: it might take {t} seconds')
 
 
@@ -161,14 +229,14 @@ def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
             raise ValueError(f'character of selection not '
                               'in npub pattern ({npub_chars})')
         time_per_guess = 1 / get_guess_rate(guess_bech32)
-        t = expected_time(len(startswith), npub_chars, time_per_guess)
+        t = expected_time(npub_chars, len(startswith), time_per_guess)
         startswith = f'npub1{startswith}'
     else:
         if not all(c in hex_chars for c in startswith):
             raise ValueError(f'character of selection not in '
                               'hex pattern ({hex_chars})')
         time_per_guess = 1 / get_guess_rate(guess_hex)
-        t = expected_time(len(startswith), hex_chars, time_per_guess)
+        t = expected_time(hex_chars, len(startswith), time_per_guess)
     print(f'It might take {t} seconds to find a {style} pubkey that starts with '
           f'{startswith}. Note that this is a very rough estimate and due '
           'to the random nature of finding vanity keys it could take MUCH '
