@@ -1,6 +1,6 @@
 DEBUG: false
 
-db_filename: :memory:
+db_filename: ../nostr-relay/nostr.sqlite3
 
 relay_name: python relay
 relay_description: relay written in python

@@ -3,13 +3,13 @@
 # %% auto 0
 __all__ = ['PrivateKey', 'PublicKey', 'MessagePool', 'Connection', 'Relay', 'RelayManager']
 
-# %% ../nbs/00_nostr_core.ipynb 5
+# %% ../nbs/00_nostr_core.ipynb 7
 from nostr import key
 from nostr import bech32
 import secp256k1
 from fastcore.utils import patch
 
-# %% ../nbs/00_nostr_core.ipynb 6
+# %% ../nbs/00_nostr_core.ipynb 8
 class PrivateKey(key.PrivateKey):
     """a class to manage private keys inherited from
     python-nostr.key.PrivateKey, with a from_hex() class method added

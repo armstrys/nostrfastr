@@ -4,11 +4,11 @@
 __all__ = ['send_nostr_message', 'set_private_key', 'get_private_key', 'delete_private_key', 'convert_to_hex',
            'get_notifyr_privkey', 'notifyr']
 
-# %% ../nbs/03_notifyr.ipynb 4
+# %% ../nbs/03_notifyr.ipynb 6
 from .client import Client
 import time
 
-# %% ../nbs/03_notifyr.ipynb 6
+# %% ../nbs/03_notifyr.ipynb 8
 def send_nostr_message(notifyr_client: Client, message: str, recipient_pubkey_hex: str) -> None:
     """a simple function that takes a client and a message and
     sends the message to the client pubkey from the client pubkey
@@ -27,12 +27,12 @@ def send_nostr_message(notifyr_client: Client, message: str, recipient_pubkey_he
     pass
 
 
-# %% ../nbs/03_notifyr.ipynb 8
+# %% ../nbs/03_notifyr.ipynb 10
 import keyring
 from keyring.errors import NoKeyringError
 from .nostr import PrivateKey, PublicKey
 
-# %% ../nbs/03_notifyr.ipynb 10
+# %% ../nbs/03_notifyr.ipynb 12
 def set_private_key(notifyr_privkey_hex: str) -> None:
    """Set the private key in the computer keyring
 
@@ -65,7 +65,7 @@ def delete_private_key() -> None:
                                    username='notifyr')
 
 
-# %% ../nbs/03_notifyr.ipynb 19
+# %% ../nbs/03_notifyr.ipynb 21
 def convert_to_hex(pubkey: str) -> str:
     """make sure the pubkey is hex
 
@@ -84,7 +84,7 @@ def convert_to_hex(pubkey: str) -> str:
             PublicKey.from_npub(pubkey).hex()
     return pubkey
 
-# %% ../nbs/03_notifyr.ipynb 20
+# %% ../nbs/03_notifyr.ipynb 22
 def get_notifyr_privkey() -> str:
     """returns a private key from keychain and
     sets a new one if one doesn't exist
@@ -101,10 +101,10 @@ def get_notifyr_privkey() -> str:
     assert get_private_key() == privkey_hex
     return privkey_hex
 
-# %% ../nbs/03_notifyr.ipynb 21
+# %% ../nbs/03_notifyr.ipynb 23
 import functools
 
-# %% ../nbs/03_notifyr.ipynb 22
+# %% ../nbs/03_notifyr.ipynb 24
 def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = None):
    """A decorator that will set a nostr private key to `func.notifyr_privkey_hex
    and use that key to send an encrypted message to it's own public key on the start
@@ -179,7 +179,7 @@ def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = Non
    notifier.notifyr_private_key = notifyr_privkey_hex
    return notifier
 
-# %% ../nbs/03_notifyr.ipynb 23
+# %% ../nbs/03_notifyr.ipynb 25
 def notifyr(func=None, recipient_pubkey: str = None, relay_urls: list[str] = None):
    """A decorator that will set a nostr private key to `func.notifyr_privkey_hex
    and use that key to send an encrypted message to it's own public key on the start
