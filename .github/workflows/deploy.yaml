@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: macos-latest
+    runs-on: linux-latest
     steps:
+       - run: sudo apt-get install -y kwalletmanager
        - uses: fastai/workflows/quarto-ghp@master
