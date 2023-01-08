@@ -59,6 +59,8 @@ working in nbdev.
 
 ## How to use
 
+Documentation can be found at https://armstrys.github.io/nostrfastr/
+
 ``` python
 from nostrfastr.client import Client
 ```
@@ -108,4 +110,6 @@ vanity_notifyr(startswith='23', style='npub')
                         see https://github.com/nostr-protocol/nips/issues/107
       warnings.warn('''the current implementation of messages should be used with caution
 
-    PrivateKey(npub123kyc...nwdqt768zj)
+    It might take 0.36160132129602135 seconds to find a npub pubkey that starts with npub123. Note that this is a very rough estimate and due to the random nature of finding vanity keys it could take MUCH longer.
+
+    PrivateKey(npub12363k...5d7qkdkhh7)
