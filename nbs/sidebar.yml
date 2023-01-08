@@ -2,6 +2,8 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_intro_to_nostr.ipynb
+      - 00_nostr_core.ipynb
       - 01_client.ipynb
       - 02_sentinel_client.ipynb
+      - 03_notifyr.ipynb
+      - 04_vanity.ipynb
