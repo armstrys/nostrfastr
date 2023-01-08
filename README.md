@@ -103,13 +103,13 @@ address when it’s done
 ``` python
 from nostrfastr.vanity import vanity_notifyr
 
-vanity_notifyr(startswith='23', style='npub')
+private_key = vanity_notifyr(startswith='23', style='npub')
+print(private_key.public_key.bech32())
 ```
 
     /Users/ryanarmstrong/python/nostrfastr/nostrfastr/client.py:479: UserWarning: the current implementation of messages should be used with caution
                         see https://github.com/nostr-protocol/nips/issues/107
       warnings.warn('''the current implementation of messages should be used with caution
 
-    It might take 0.36160132129602135 seconds to find a npub pubkey that starts with npub123. Note that this is a very rough estimate and due to the random nature of finding vanity keys it could take MUCH longer.
-
-    PrivateKey(npub12363k...5d7qkdkhh7)
+    It might take 0 seconds to find a npub pubkey that starts with npub123. Note that this is a very rough estimate and due to the random nature of finding vanity keys it could take MUCH longer.
+    npub1237z2shf8rlgs8xqg0cggz7dhxjtkszy205wesht2xr3nat86m7s30lqw5
