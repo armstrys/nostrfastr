@@ -6,8 +6,9 @@ nostrfastr
 ### What is this?
 
 - This package attempts to be a well documented and tested instance of a
-  very basic client framework in nostr that can help others understand
-  nostr quickly or get started sending messages in minutes.
+  very basic client framework and other tools that use the nostr
+  protocol. The goal is to help others understand nostr quickly and get
+  started sending messages from python in minutes.
 - Contained is a collection of tools built on top of this basic
   [`Client`](https://armstrys.github.io/nostrfastr/client.html#client)
   class showing some potential uses of nostr any how quickly we can
@@ -36,6 +37,13 @@ not be the most perfomant way to implement much of what I am doing here,
 but I hope it can make the
 [nostr](https://github.com/nostr-protocol/nostr) protocol more
 accessible to a wider audience.
+
+### Suggestions
+
+If you have suggestions for topics or concepts related to nostr that
+this package could help document or explain in python, please feel free
+to [submit an issue with a suggestion
+here](https://github.com/armstrys/nostrfastr/issues)
 
 ### Known issues
 
