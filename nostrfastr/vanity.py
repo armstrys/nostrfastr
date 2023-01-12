@@ -153,11 +153,11 @@ def _expected_time(options: Union[str,list], num_char: int, time_per_guess: floa
     time_seconds = n_guess * time_per_guess
     return time_seconds
 
-
-# %% ../nbs/04_vanity.ipynb 19
 hex_chars = 'abcdef0123456789'
 npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
 
+
+# %% ../nbs/04_vanity.ipynb 19
 def _average_char_by_time(options: Union[str,list], time_per_guess: float) -> None:
     """print an average number of characters you would expect to be
     able to guess for certain time periods based on character options
