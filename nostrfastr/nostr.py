@@ -174,7 +174,8 @@ class RelayManager(relay_manager.RelayManager):
                 )
                 self.remove_relay(url=url)
 
-    def add_relay(self, url: str, read: bool=True, write: bool=True, subscriptions={}):
+    def add_relay(self, url: str, read: bool=True, write: bool=True, subscriptions=None):
+        subscriptions = subscriptions if subscriptions is not None else {}
         policy = RelayPolicy(read, write)
         relay = Relay(url, policy, self.message_pool, subscriptions)
         self.relays[url] = relay

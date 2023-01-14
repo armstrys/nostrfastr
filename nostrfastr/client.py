@@ -375,6 +375,25 @@ def filter_events_authors(self: Client, authors: Union[str,list]) -> Filter:
         authors=authors
         )
 
+
+@patch
+def filter_events_recommended_relays(self: Client, authors: Union[str,list]) -> Filter:
+    """build a filter from authors
+
+    Args:
+        authors (Union[str,list]): an author or a list of authors to request
+
+    Returns:
+        Filter: A filter object to use with a subscription
+    """
+    # TODO: add support for npubs
+    if isinstance(authors, str):
+        authors = [authors]
+    return Filter(
+        authors=authors,
+        kinds=[EventKind.RECOMMEND_RELAY]
+        )
+
 @patch
 def event_metadata(self: Client,
                    name: str = None,
