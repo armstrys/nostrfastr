@@ -38,6 +38,15 @@ def _guess_vanity(make_format, startswith=''):
         return None, None
 
 
+def _guess_vanity_slow(startswith=''):
+    privkey = PrivateKey()
+    pubkey_hex = privkey.public_key.hex()
+    if pubkey_hex.startswith(startswith):
+        return privkey.hex(), pubkey_hex
+    else:
+        return None, None
+
+
 # %% ../nbs/04_vanity.ipynb 9
 guess_bech32 = functools.partial(_guess_vanity, make_format=_make_bech32)
 guess_hex = functools.partial(_guess_vanity, make_format=_make_hex)
@@ -84,10 +93,10 @@ def _get_guess_time(guesser, n_guesses=1e4):
     t = sum([_time_guess(guesser) for _ in range(n_guesses)]) / n_guesses
     return t
 
-# %% ../nbs/04_vanity.ipynb 17
+# %% ../nbs/04_vanity.ipynb 18
 import math
 
-# %% ../nbs/04_vanity.ipynb 18
+# %% ../nbs/04_vanity.ipynb 19
 def _expected_guesses_by_char(options: Union[str,list], num_char: int) -> float:
     """return an average number of guesses it would take to guess
     a pattern based on the number of characters in the pattern and
@@ -107,7 +116,7 @@ def _expected_guesses_by_char(options: Union[str,list], num_char: int) -> float:
         the expected number of guesses required to match the pattern
     """
     p = 1 / len(options)
-    return (p ** -num_char - 1)/ (1 - p)
+    return p ** -num_char
 
 def _expected_chars_by_time(options: Union[str,list], num_guesses: int) -> float:
     """the length of pattern you might expect to be able to guess given a
@@ -127,7 +136,7 @@ def _expected_chars_by_time(options: Union[str,list], num_guesses: int) -> float
         th
     """
     p = 1 / len(options)
-    n = - math.log(1 + (num_guesses * (1 - p))) / math.log(p)
+    n = - math.log(num_guesses) / math.log(p)
     return n
 
 def _expected_time(options: Union[str,list], num_char: int, time_per_guess: float) -> float:
@@ -157,7 +166,7 @@ hex_chars = 'abcdef0123456789'
 npub_chars = '023456789acdefghjklmnpqrstuvwxyz'
 
 
-# %% ../nbs/04_vanity.ipynb 19
+# %% ../nbs/04_vanity.ipynb 20
 def _average_char_by_time(options: Union[str,list], time_per_guess: float) -> None:
     """print an average number of characters you would expect to be
     able to guess for certain time periods based on character options
@@ -209,7 +218,7 @@ def _average_time_by_char(options: Union[str,list], time_per_guess: float) -> No
 
 
 
-# %% ../nbs/04_vanity.ipynb 23
+# %% ../nbs/04_vanity.ipynb 24
 def expected_performance():
     print(
         '''This is a random guessing process - estimations are an average, but the actual
@@ -232,7 +241,7 @@ def expected_performance():
 
     
 
-# %% ../nbs/04_vanity.ipynb 26
+# %% ../nbs/04_vanity.ipynb 27
 def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
     """randomly generate private keys until one matches the desire
     startswith for an npub or hex
@@ -277,5 +286,5 @@ def gen_vanity_pubkey(startswith: str, style='hex') -> PrivateKey:
             privkey_hex, pubkey = guess_hex(startswith=startswith)
     return PrivateKey.from_hex(privkey_hex)
 
-# %% ../nbs/04_vanity.ipynb 35
+# %% ../nbs/04_vanity.ipynb 36
 vanity_notifyr = notifyr(gen_vanity_pubkey)
