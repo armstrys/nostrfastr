@@ -1,0 +1,1 @@
+Sitemap: https://armstrys.github.io/nostrfastr/sitemap.xml

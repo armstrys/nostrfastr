@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Learn about the nostr protocol and how we call it from python with python-nostr">
+
+<title>nostrfastr - nostr_core</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="nostrfastr - nostr_core">
+<meta property="og:description" content="Learn about the nostr protocol and how we call it from python with `python-nostr`">
+<meta property="og:site-name" content="nostrfastr">
+<meta name="twitter:title" content="nostrfastr - nostr_core">
+<meta name="twitter:description" content="Learn about the nostr protocol and how we call it from python with `python-nostr`">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">nostrfastr</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">nostr_core</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">nostrfastr</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nostr_core.html" class="sidebar-item-text sidebar-link active">nostr_core</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./client.html" class="sidebar-item-text sidebar-link">client</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sentinel_client.html" class="sidebar-item-text sidebar-link">sentinel (in progress)</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notifyr.html" class="sidebar-item-text sidebar-link">notifyr</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vanity.html" class="sidebar-item-text sidebar-link">vanity</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-nostr" id="toc-what-is-nostr" class="nav-link active" data-scroll-target="#what-is-nostr">What is nostr?</a></li>
+  <li><a href="#private-and-public-keys" id="toc-private-and-public-keys" class="nav-link" data-scroll-target="#private-and-public-keys">Private and Public Keys</a>
+  <ul class="collapse">
+  <li><a href="#privatekey" id="toc-privatekey" class="nav-link" data-scroll-target="#privatekey">PrivateKey</a></li>
+  <li><a href="#privatekey.from_hex" id="toc-privatekey.from_hex" class="nav-link" data-scroll-target="#privatekey.from_hex">PrivateKey.from_hex</a></li>
+  <li><a href="#privatekey.from_nsec" id="toc-privatekey.from_nsec" class="nav-link" data-scroll-target="#privatekey.from_nsec">PrivateKey.from_nsec</a></li>
+  <li><a href="#publickey" id="toc-publickey" class="nav-link" data-scroll-target="#publickey">PublicKey</a></li>
+  <li><a href="#publickey.from_hex" id="toc-publickey.from_hex" class="nav-link" data-scroll-target="#publickey.from_hex">PublicKey.from_hex</a></li>
+  <li><a href="#publickey.from_npub" id="toc-publickey.from_npub" class="nav-link" data-scroll-target="#publickey.from_npub">PublicKey.from_npub</a></li>
+  </ul></li>
+  <li><a href="#nostr-events" id="toc-nostr-events" class="nav-link" data-scroll-target="#nostr-events">Nostr Events</a>
+  <ul class="collapse">
+  <li><a href="#event" id="toc-event" class="nav-link" data-scroll-target="#event">Event</a></li>
+  </ul></li>
+  <li><a href="#relays-relay-management-and-the-message-pool" id="toc-relays-relay-management-and-the-message-pool" class="nav-link" data-scroll-target="#relays-relay-management-and-the-message-pool">Relays, Relay Management, and the Message Pool</a>
+  <ul class="collapse">
+  <li><a href="#relay" id="toc-relay" class="nav-link" data-scroll-target="#relay">Relay</a></li>
+  <li><a href="#relay-1" id="toc-relay-1" class="nav-link" data-scroll-target="#relay-1">Relay</a></li>
+  <li><a href="#relay.publish" id="toc-relay.publish" class="nav-link" data-scroll-target="#relay.publish">Relay.publish</a></li>
+  <li><a href="#relay-manager" id="toc-relay-manager" class="nav-link" data-scroll-target="#relay-manager">Relay Manager</a></li>
+  <li><a href="#relaymanager.add_relay" id="toc-relaymanager.add_relay" class="nav-link" data-scroll-target="#relaymanager.add_relay">RelayManager.add_relay</a></li>
+  <li><a href="#relaymanager.remove_relay" id="toc-relaymanager.remove_relay" class="nav-link" data-scroll-target="#relaymanager.remove_relay">RelayManager.remove_relay</a></li>
+  <li><a href="#relaymanager.publish_message" id="toc-relaymanager.publish_message" class="nav-link" data-scroll-target="#relaymanager.publish_message">RelayManager.publish_message</a></li>
+  <li><a href="#message-pool" id="toc-message-pool" class="nav-link" data-scroll-target="#message-pool">Message Pool</a></li>
+  <li><a href="#messagepool" id="toc-messagepool" class="nav-link" data-scroll-target="#messagepool">MessagePool</a></li>
+  <li><a href="#messagepool.get_event" id="toc-messagepool.get_event" class="nav-link" data-scroll-target="#messagepool.get_event">MessagePool.get_event</a></li>
+  <li><a href="#messagepool.get_notice" id="toc-messagepool.get_notice" class="nav-link" data-scroll-target="#messagepool.get_notice">MessagePool.get_notice</a></li>
+  <li><a href="#messagepool.get_eose_notice" id="toc-messagepool.get_eose_notice" class="nav-link" data-scroll-target="#messagepool.get_eose_notice">MessagePool.get_eose_notice</a></li>
+  </ul></li>
+  <li><a href="#subscriptions" id="toc-subscriptions" class="nav-link" data-scroll-target="#subscriptions">Subscriptions</a>
+  <ul class="collapse">
+  <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter">Filter</a></li>
+  <li><a href="#subscription" id="toc-subscription" class="nav-link" data-scroll-target="#subscription">Subscription</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/armstrys/nostrfastr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">nostr_core</h1>
+</div>
+
+<div>
+  <div class="description">
+    Learn about the nostr protocol and how we call it from python with <code>python-nostr</code>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<blockquote class="blockquote">
+<p>This repository relies heavily on <a href="https://github.com/jeffthibault/python-nostr">python-nostr</a> for underlying functionality. This notebook will walk you through the key characteristics of the nostr protocol and also make some changes to the classes from <code>python-nostr</code> that will be used in the basic client implementation.</p>
+</blockquote>
+<section id="what-is-nostr" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-nostr">What is nostr?</h2>
+<p>This notebook will attempt to describe nostr via python code. There are many resources dedicated to describing nostr in words. See:</p>
+<ul>
+<li><a href="https://github.com/nostr-protocol/nostr#readme">the readme on the nostr protocol github</a></li>
+<li><a href="https://github.com/nostr-protocol/nips#readme">the Nostr Improvement Proposal (NIPs) nostr protocol github</a> has detailed descriptions of technical implementations and is very well-documented.</li>
+<li><a href="https://usenostr.org/">usenostr.org</a> for a basic and approachable description</li>
+<li><a href="https://github.com/aljazceru/awesome-nostr#readme">awesome-nostr</a> for a complete list of tools and resources.</li>
+</ul>
+<p>In short, nostr is a communication protocol that provides a relatively simple framework for events and metadata to be published to servers (relays) after being cryptographically signed using a private key. In orther words, the data published to the relays is visible by anyone, but provably created by the person who holds the private key associated with the event. A technical description of how the events are created can be found <a href="https://github.com/nostr-protocol/nips/blob/master/01.md#events-and-signatures">here</a> and a current list of the different event types <a href="https://github.com/nostr-protocol/nips#event-kinds">here</a>.</p>
+<p>Because of the simplicity and openness of the nostr protocol a long list of tools and clients with different purposes have already been built on the nostr protocol as can be seen on <a href="https://github.com/aljazceru/awesome-nostr#readme">awesome-nostr</a>. There will continue to be more as new people are exposed to the protocol and the accepted event types continue to expand.</p>
+<p>Fundamentally, nostr relays and clients are built on a relatively simple set of tools - most of which can be described nicely by looking at the modules of <code>python-nostr</code>, which is what we’ll do here. Specifically, covered topics in this notebook can be accessed quickly via the sidebar and include:</p>
+<ul>
+<li><a href="https://armstrys.github.io/nostrfastr/nostr_core.html#privatekey"><code>PrivateKey</code></a> and <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#publickey"><code>PublicKey</code></a></li>
+<li><code>Event</code></li>
+<li><a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a>, <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a>, and the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a></li>
+<li><code>Subscription</code></li>
+</ul>
+</section>
+<section id="private-and-public-keys" class="level2">
+<h2 class="anchored" data-anchor-id="private-and-public-keys">Private and Public Keys</h2>
+<p>In nostr, the private key is the root of “account” ownership. The public key is derived from a private key using the same eliptic curve cryptography that is used for bitcoint private and public key pairs. nostr events are then signed using <a href="https://bips.xyz/340">Schnorr Signatures</a>, which prove “ownership” of the event. We will cover events in more detail later.</p>
+<p>In this documentation you will see two versions of the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#publickey"><code>PublicKey</code></a> and <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#privatekey"><code>PrivateKey</code></a> classes, one version loaded directly from the <code>python-nostr.key</code> module as <code>key.Class</code> and one with added hex and bech32 functionality as denoted without <code>key.</code> in front.</p>
+<p>First, let’s look at the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#privatekey"><code>PrivateKey</code></a> classes</p>
+<p>By default the class is instantiated with raw bytes as shown below</p>
+<hr>
+<section id="privatekey" class="level3">
+<h3 class="anchored" data-anchor-id="privatekey">PrivateKey</h3>
+<blockquote class="blockquote">
+<pre><code> PrivateKey (raw_secret:bytes=None)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>Instantiation with no argument gives a new random private key</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>private_key <span class="op">=</span> PrivateKey()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(private_key)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PrivateKey(npub1j8l27...zthqnwmn00)</code></pre>
+</div>
+</div>
+<p>more commonly you will likely instantiate the private key from a hex string</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L29" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="privatekey.from_hex" class="level3">
+<h3 class="anchored" data-anchor-id="privatekey.from_hex">PrivateKey.from_hex</h3>
+<blockquote class="blockquote">
+<pre><code> PrivateKey.from_hex (hex:str)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>private_key_hex <span class="op">=</span> private_key.<span class="bu">hex</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>the_same_private_key <span class="op">=</span> PrivateKey.from_hex(private_key_hex)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> private_key.<span class="bu">hex</span>() <span class="op">==</span> the_same_private_key.<span class="bu">hex</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>or after the introduction of <a href="https://github.com/nostr-protocol/nips/blob/master/19.md">bech32 entities in NIP-19</a> (private keys denoted as <code>nsec...</code>) like so</p>
+<hr>
+</section>
+<section id="privatekey.from_nsec" class="level3">
+<h3 class="anchored" data-anchor-id="privatekey.from_nsec">PrivateKey.from_nsec</h3>
+<blockquote class="blockquote">
+<pre><code> PrivateKey.from_nsec (nsec:str)</code></pre>
+</blockquote>
+<p>Load a PrivateKey from its bech32/nsec form</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>private_key_bech32 <span class="op">=</span> private_key.bech32()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>the_same_private_key <span class="op">=</span> PrivateKey.from_nsec(private_key_bech32)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> private_key.bech32() <span class="op">==</span> the_same_private_key.bech32()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#publickey"><code>PublicKey</code></a> class from <code>python-nostr</code> has very similar characteristics to the private key class, but with the key difference that the public key can be generated from the private key and the reverse is not possible by design. Below are the docs for instantiating a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#publickey"><code>PublicKey</code></a> object in <code>python-nostr</code></p>
+<hr>
+</section>
+<section id="publickey" class="level3">
+<h3 class="anchored" data-anchor-id="publickey">PublicKey</h3>
+<blockquote class="blockquote">
+<pre><code> PublicKey (raw_bytes:bytes)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>Unlike the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#privatekey"><code>PrivateKey</code></a> class, the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#publickey"><code>PublicKey</code></a> class requires an input to be created. A random public key would mean that no one knows the associated private key and so that is not allowed. Instead, we will get our public key from the private key we already generated</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>public_key <span class="op">=</span> private_key.public_key</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(public_key)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">isinstance</span>(public_key, PublicKey)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PublicKey(npub1j8l27...zthqnwmn00)</code></pre>
+</div>
+</div>
+<p>The public can can also be retrieved from a public hex</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L48" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="publickey.from_hex" class="level3">
+<h3 class="anchored" data-anchor-id="publickey.from_hex">PublicKey.from_hex</h3>
+<blockquote class="blockquote">
+<pre><code> PublicKey.from_hex (hex:str)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>public_key_hex <span class="op">=</span> public_key.<span class="bu">hex</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>the_same_public_key <span class="op">=</span> PublicKey.from_hex(public_key_hex)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> public_key.<span class="bu">hex</span>() <span class="op">==</span> the_same_public_key.<span class="bu">hex</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>or an npub bech32 encoded public key</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L41" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="publickey.from_npub" class="level3">
+<h3 class="anchored" data-anchor-id="publickey.from_npub">PublicKey.from_npub</h3>
+<blockquote class="blockquote">
+<pre><code> PublicKey.from_npub (npub:str)</code></pre>
+</blockquote>
+<p>Load a PublicKey from its bech32/npub form</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>public_key_bech32 <span class="op">=</span> public_key.bech32()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>the_same_public_key <span class="op">=</span> PublicKey.from_npub(public_key_bech32)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> public_key.bech32() <span class="op">==</span> the_same_public_key.bech32()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="nostr-events" class="level2">
+<h2 class="anchored" data-anchor-id="nostr-events">Nostr Events</h2>
+<p>Events are the key substance through which user communication happens over Nostr. Right now, the most common event type is a <code>text_note</code>, but there are <a href="https://github.com/nostr-protocol/nips#event-kinds">many other event kinds</a> that can be published to a nostr relay. Events are generally made up of the following:</p>
+<ul>
+<li><code>id</code> - the hash of the event content - if the content of the a created event changes on a relay the old <code>id</code> would no longer match the hash of the content</li>
+<li><code>pubkey</code> - the public key of the author of the event</li>
+<li><code>created_at</code> - a time stamp given to the event at time of creation</li>
+<li><code>kind</code> - integer labeling the kind of event</li>
+<li><code>tags</code> - a list of arrays with tags such as <code>e</code> for related events or <code>p</code> for related people (like mentions)</li>
+<li><code>content</code> - the content of an event - the format of the content will vary depending on the kind of event. For a <code>text_note</code> (kind 1) this would be a string</li>
+<li><code>signature</code> - a signature generated from the private key associated with the public key <strong>and</strong> the event ID field - a valid signature ensures that anyone can check that a specific event was in fact signed by the private key of the author and that the content has not changed from the time the event was signed.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> the above all applies specifically to event <em>creation</em>. An event can be republished across many relays by any party as long as the event data has not changed. Some relays have limits on the age of an event, but where the event lives and who put it there is completely irrelevant to the validity of an event. This has many interesting implications, some of which will be explored elsewhere in this module.</p>
+</blockquote>
+<p>In <code>python-nostr</code> we create events like so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nostr.event <span class="im">import</span> Event, EventKind</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pprint</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> test_fail</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<section id="event" class="level3">
+<h3 class="anchored" data-anchor-id="event">Event</h3>
+<blockquote class="blockquote">
+<pre><code> Event (public_key:str, content:str, created_at:int=1674361640,
+        kind:int=&lt;EventKind.TEXT_NOTE: 1&gt;, tags:list[list[str]]=[],
+        id:str=None, signature:str=None)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>As example, we can create a new event</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>event <span class="op">=</span> Event(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    public_key<span class="op">=</span>public_key.<span class="bu">hex</span>(),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    content<span class="op">=</span><span class="st">'this is a test'</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">=</span>EventKind.TEXT_NOTE,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    created_at<span class="op">=</span><span class="bu">int</span>(time.time(),)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>pprint.pprint(event.to_json_object())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'this is a test',
+ 'created_at': 1674322515,
+ 'id': '589ad714c2a36929abd4a817a2177c594d31e5c373948af9c22890f5590c17f6',
+ 'kind': &lt;EventKind.TEXT_NOTE: 1&gt;,
+ 'pubkey': '91feaf1b03c1dc0ed61163f77b4cf4d1821cce392983d4c68d82207a773f12ee',
+ 'sig': None,
+ 'tags': []}</code></pre>
+</div>
+</div>
+<p>The id hash is automatically generated from the event content, but the signature is blank because the event has not been signed with a private key. Below we can test signing an event with our real private key and also a random private key. We see that one event verifies that the public key, signature, and event id all match, while the event signed with the wrong private key does not verify.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>event.sign(PrivateKey().<span class="bu">hex</span>())</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> event.verify()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>event.sign(private_key.<span class="bu">hex</span>())</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> event.verify()</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>pprint.pprint(event.to_json_object())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'this is a test',
+ 'created_at': 1674322515,
+ 'id': '589ad714c2a36929abd4a817a2177c594d31e5c373948af9c22890f5590c17f6',
+ 'kind': &lt;EventKind.TEXT_NOTE: 1&gt;,
+ 'pubkey': '91feaf1b03c1dc0ed61163f77b4cf4d1821cce392983d4c68d82207a773f12ee',
+ 'sig': '23bfb21c8f9594ca068e52d7d752af05041fc710dcf3cf9c63064890c1687b8271cd0d36c874fed13dc5caa849b5cfae17c9969d182b0f36612f6585eb7e3ef3',
+ 'tags': []}</code></pre>
+</div>
+</div>
+<p>Additionally, if we change the content and don’t recompute both the <code>ID</code> and the <code>signature</code> then the event will not verify.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>event.created_at <span class="op">=</span> time.time()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>event.<span class="bu">id</span> <span class="op">=</span> event.compute_id(public_key<span class="op">=</span>event.public_key, created_at<span class="op">=</span>event.created_at, kind<span class="op">=</span>event.kind, tags<span class="op">=</span>event.tags, content<span class="op">=</span>event.content)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> event.verify()</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>event.created_at <span class="op">=</span> time.time()</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>event.sign(private_key.<span class="bu">hex</span>())</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> event.verify()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As long as we do both of these things the event verifies event with changed data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>event.created_at <span class="op">=</span> time.time()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>event.<span class="bu">id</span> <span class="op">=</span> event.compute_id(public_key<span class="op">=</span>event.public_key, created_at<span class="op">=</span>event.created_at, kind<span class="op">=</span>event.kind, tags<span class="op">=</span>event.tags, content<span class="op">=</span>event.content)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>event.sign(private_key.<span class="bu">hex</span>())</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> event.verify()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>python-nostr</code> also supports other event types. The basic client module in this library can help build the content and tags of other event types in the correct format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> kind <span class="kw">in</span> EventKind:</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    display(kind)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.SET_METADATA: 0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.TEXT_NOTE: 1&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.RECOMMEND_RELAY: 2&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.CONTACTS: 3&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.ENCRYPTED_DIRECT_MESSAGE: 4&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;EventKind.DELETE: 5&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="relays-relay-management-and-the-message-pool" class="level2">
+<h2 class="anchored" data-anchor-id="relays-relay-management-and-the-message-pool">Relays, Relay Management, and the Message Pool</h2>
+<p>Though this package is primarily focused on the tools needed to run a nostr client - we will talk a bit about only enough to understand how they serve the client. More detailed information on relays can always be found in the <a href="https://github.com/nostr-protocol/nips">NIPs section of the nostr github repository</a>. For testing in this package we are going to use a python package called <code>nostr-relay</code>, which is installed alongside this package. It will run a local server that we can connect to instead of pinging public servers over and over with tests.</p>
+<p>Relays act as a simple data server for clients to interact with. Clients can publish events a relay and make requests (in the form of subscriptions) to get events back from a relay.</p>
+<p>Connections between clients and relays are made over a ‘websocket’ (typically handled by <a href="https://websockets.readthedocs.io/en/stable/">websockets</a> in Python). A single websocket between a client and a relay can handle all data requests and typically should remain open as long as the client is live. Repeated connection and disconnections of websockets can put extra, unneeded strain on relays.</p>
+<p>The message types that can be exchanged between a client and a relay are outlined <a href="https://github.com/nostr-protocol/nips#message-types">here</a>:</p>
+<ul>
+<li>client to relay
+<ul>
+<li><code>EVENT</code> - A nostr event being published to a relay</li>
+<li><code>REQ</code> - a client requesting a subscription to events from a relay</li>
+<li><code>CLOSE</code> - a client closing a subscription</li>
+</ul></li>
+<li>relay to client
+<ul>
+<li><code>EVENT</code> - an incoming event from a relay</li>
+<li><code>NOTICE</code> - human-readable text with an explanation of any issues</li>
+<li><code>EOSE</code> - a notice that all past stored messages have been transferred and that all future messages are newly published</li>
+<li><code>OK</code> - a True/False response if an EVENT was published successfully</li>
+</ul></li>
+</ul>
+<p><code>python-nostr</code> uses a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a> class to <code>Queue</code> the incoming stream of messages from the individial <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> websockets that are all running on different threads.</p>
+<p>This package implements slightly modified versions of the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a>, <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a>, and <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a> classes found in <code>python-nostr</code> the basic usage is nearly identical, with a few added features that make building a the <a href="https://armstrys.github.io/nostrfastr/client.html#client"><code>Client</code></a> class easier. Added features that aren’t yet included in <code>python-nostr</code>:</p>
+<ul>
+<li>a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#connection"><code>Connection</code></a> context manager that is used to open connections on a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> or <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a> object using a <code>with</code> statement</li>
+<li><a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a>
+<ul>
+<li>an <code>open_connections</code> method on a single relay to mirror the thread-based connection opening used in the <code>RelayManager</code> class.</li>
+<li>an <code>is_connected</code> property to see if the websocket is open</li>
+</ul></li>
+<li><a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a>
+<ul>
+<li>additional connection management methods to make relay manager more robust to inactive connections</li>
+<li>an <code>__iter__</code> method that allows the client to access the <code>Relay</code> objects by iterating directly on the <code>RelayManager</code> object instead of <code>RelayManager.relays.values()</code></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nostr <span class="im">import</span> relay, relay_manager</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="relay" class="level3">
+<h3 class="anchored" data-anchor-id="relay">Relay</h3>
+<p>The documentation below shows how a Relay is instantiated using <code>python-nostr</code>. The relay policy is defined by the <code>RelayPolicy</code> class</p>
+<hr>
+</section>
+<section id="relay-1" class="level3">
+<h3 class="anchored" data-anchor-id="relay-1">Relay</h3>
+<blockquote class="blockquote">
+<pre><code> Relay (url:str, policy:nostr.relay.RelayPolicy,
+        message_pool:nostr.message_pool.MessagePool,
+        subscriptions:dict[str,nostr.subscription.Subscription]={})</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>Remember that in this package we will use a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> class that inherits the <code>python-nostr</code> relay class. The same will go for the relay manager and the message pool.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">issubclass</span>(Relay, relay.Relay) <span class="kw">and</span> <span class="op">\</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>       <span class="bu">issubclass</span>(RelayManager, relay_manager.RelayManager) <span class="kw">and</span> <span class="op">\</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>       <span class="bu">issubclass</span>(MessagePool, message_pool.MessagePool)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Below we test using the context manager from the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> class in this package to connect and disconnect to a relay.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>url<span class="op">=</span><span class="st">'ws://127.0.0.1:6969'</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>a_relay <span class="op">=</span> Relay(</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    url<span class="op">=</span>url,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    policy<span class="op">=</span>RelayPolicy(),</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    message_pool<span class="op">=</span>MessagePool()</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> a_relay.is_connected</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> a_relay.connection(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}):</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">.5</span>)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'Is the relay connected? </span><span class="sc">{</span>a_relay<span class="sc">.</span>is_connected<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> a_relay.is_connected</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>time.sleep(<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     ('127.0.0.1', 51211) - "WebSocket /" [accepted]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:27,716 - nostr_relay.web - INFO - Accepted 127.0.0.1-2a7e from Origin: http://127.0.0.1:6969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection open</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:27,725 - websocket - WARNING - websocket connected
+Is the relay connected? True
+2023-01-21 09:35:28,212 - nostr_relay.web - INFO - Done 127.0.0.1-2a7e. sent: 0 bytes. duration: 0sec</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection closed</code></pre>
+</div>
+</div>
+<p>and make sure that when it errors out it properly reports the error and proceeds to safely close the connection to the relay</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> test_fail</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> error_in_context():</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> a_relay.connection(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}):</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">.5</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">Exception</span>()</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>test_fail(error_in_context)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> a_relay.is_connected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     ('127.0.0.1', 51216) - "WebSocket /" [accepted]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:29,804 - nostr_relay.web - INFO - Accepted 127.0.0.1-b577 from Origin: http://127.0.0.1:6969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection open</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:29,817 - websocket - WARNING - websocket connected
+2023-01-21 09:35:30,303 - nostr_relay.web - INFO - Done 127.0.0.1-b577. sent: 0 bytes. duration: 0sec</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection closed</code></pre>
+</div>
+</div>
+<p>Let’s try to publish an event to a our local relay - typically you would do this through the relay manager as to publish content across multiple relays, but for testing purposes we will only use one.</p>
+<hr>
+</section>
+<section id="relay.publish" class="level3">
+<h3 class="anchored" data-anchor-id="relay.publish">Relay.publish</h3>
+<blockquote class="blockquote">
+<pre><code> Relay.publish (message:str)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nostr <span class="im">import</span> message_type</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We need to get our message to the relay <a href="https://github.com/nostr-protocol/nips/blob/master/01.md#from-client-to-relay-sending-events-and-creating-subscriptions">in the right format as specified by NIP-01</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>message <span class="op">=</span> [message_type.ClientMessageType.EVENT, event.to_json_object()]</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>message <span class="op">=</span> json.dumps(message)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(message)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>["EVENT", {"id": "290b51301f55bf2ad51dba58e935cd6fbef8b9780c5e557a706c9403ae12b345", "pubkey": "91feaf1b03c1dc0ed61163f77b4cf4d1821cce392983d4c68d82207a773f12ee", "created_at": 1674322516.899612, "kind": 1, "tags": [], "content": "this is a test", "sig": "0c205776f1470aa1391d2556032b0a666fc9f88c5dfb1ddf968851a1186da8ea5ba3ca05c7202d68ee1b6b010323fd221220e13f16342cf319e7b347b12ed591"}]</code></pre>
+</div>
+</div>
+<p>And now we can publish it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> a_relay.connection(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}):</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">.5</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    a_relay.publish(message)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     ('127.0.0.1', 51222) - "WebSocket /" [accepted]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:35,170 - nostr_relay.web - INFO - Accepted 127.0.0.1-3be4 from Origin: http://127.0.0.1:6969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection open</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:35,176 - websocket - WARNING - websocket connected</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection closed</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:35,679 - nostr_relay.web - INFO - 127.0.0.1-3be4 added 290b51301f55bf2ad51dba58e935cd6fbef8b9780c5e557a706c9403ae12b345 from 91feaf1b03c1dc0ed61163f77b4cf4d1821cce392983d4c68d82207a773f12ee
+2023-01-21 09:35:35,685 - nostr_relay.web - INFO - Done 127.0.0.1-3be4. sent: 0 bytes. duration: 1sec</code></pre>
+</div>
+</div>
+<p>We will try to read this later.</p>
+</section>
+<section id="relay-manager" class="level3">
+<h3 class="anchored" data-anchor-id="relay-manager">Relay Manager</h3>
+<p>Generally, most interactions will happen through the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a> class. The relay manager allows easy interaction across multiple relays. Key methods are documented below</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L177" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="relaymanager.add_relay" class="level3">
+<h3 class="anchored" data-anchor-id="relaymanager.add_relay">RelayManager.add_relay</h3>
+<blockquote class="blockquote">
+<pre><code> RelayManager.add_relay (url:str, read:bool=True, write:bool=True,
+                         subscriptions=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L183" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="relaymanager.remove_relay" class="level3">
+<h3 class="anchored" data-anchor-id="relaymanager.remove_relay">RelayManager.remove_relay</h3>
+<blockquote class="blockquote">
+<pre><code> RelayManager.remove_relay (url:str)</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="relaymanager.publish_message" class="level3">
+<h3 class="anchored" data-anchor-id="relaymanager.publish_message">RelayManager.publish_message</h3>
+<blockquote class="blockquote">
+<pre><code> RelayManager.publish_message (message:str)</code></pre>
+</blockquote>
+<p>You can also access connection statuses of the relays with <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager.connection_statuses"><code>RelayManager.connection_statuses</code></a>. Below we use that property to check connections after making a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relaymanager"><code>RelayManager</code></a> object, adding a <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> and connecting with the context manager.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>manager <span class="op">=</span> RelayManager()</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>urls<span class="op">=</span>[url]</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> url <span class="kw">in</span> urls:</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    manager.add_relay(url<span class="op">=</span>url)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> manager.connection():</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'opening'</span>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(manager.connection_statuses)</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">all</span>(manager.connection_statuses.values())</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'closing'</span>)</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(manager.connection_statuses)</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> <span class="bu">any</span>(manager.connection_statuses.values())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     ('127.0.0.1', 51225) - "WebSocket /" [accepted]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:40,202 - nostr_relay.web - INFO - Accepted 127.0.0.1-ef13 from Origin: http://127.0.0.1:6969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection open</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:40,211 - websocket - WARNING - websocket connected
+opening
+{'ws://127.0.0.1:6969': True}
+closing
+{'ws://127.0.0.1:6969': False}
+2023-01-21 09:35:42,207 - nostr_relay.web - INFO - Done 127.0.0.1-ef13. sent: 0 bytes. duration: 2sec</code></pre>
+</div>
+</div>
+<p><a href="https://armstrys.github.io/nostrfastr/nostr_core.html#relay"><code>Relay</code></a> objects that don’t connect will be remove automatically and throw a warning.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>manager <span class="op">=</span> RelayManager()</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>urls<span class="op">=</span>[<span class="st">'ws://this-relay-doesnt-exist.com'</span>]</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> u <span class="kw">in</span> urls:</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>    manager.add_relay(url<span class="op">=</span>u)</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> manager.connection():</span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">len</span>(manager.relays) <span class="op">==</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection closed</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:35:42,308 - websocket - ERROR - [Errno 8] nodename nor servname provided, or not known - goodbye</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/var/folders/3x/w083pw853418fqm2blj59w480000gn/T/ipykernel_10817/1720938854.py:40: UserWarning: ws://this-relay-doesnt-exist.com is not connected... removing relay.
+  warnings.warn(</code></pre>
+</div>
+</div>
+</section>
+<section id="message-pool" class="level3">
+<h3 class="anchored" data-anchor-id="message-pool">Message Pool</h3>
+<p>Because we have multiple open websockets, the connections are threaded in Python. The <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a> class acts as a shared Queue where different types of messages from the relay can all be accessed. The only significant change from the <code>python-nostr MessagePool</code> to this package is allowing the client to chose whether it should only keep the first event or whether it should keep multiples of event messages across all relays. Keeping all responses from all relays will allow the client to check how well distributed the user content is across the relays.</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/nostr.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="messagepool" class="level3">
+<h3 class="anchored" data-anchor-id="messagepool">MessagePool</h3>
+<blockquote class="blockquote">
+<pre><code> MessagePool (first_response_only:bool=True)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>The key events to access the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a> in <code>python-nostr</code> are listed below. We will add more functionality at the client level to modify how these events are handled upon receipt.</p>
+<hr>
+</section>
+<section id="messagepool.get_event" class="level3">
+<h3 class="anchored" data-anchor-id="messagepool.get_event">MessagePool.get_event</h3>
+<blockquote class="blockquote">
+<pre><code> MessagePool.get_event ()</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="messagepool.get_notice" class="level3">
+<h3 class="anchored" data-anchor-id="messagepool.get_notice">MessagePool.get_notice</h3>
+<blockquote class="blockquote">
+<pre><code> MessagePool.get_notice ()</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="messagepool.get_eose_notice" class="level3">
+<h3 class="anchored" data-anchor-id="messagepool.get_eose_notice">MessagePool.get_eose_notice</h3>
+<blockquote class="blockquote">
+<pre><code> MessagePool.get_eose_notice ()</code></pre>
+</blockquote>
+<p>In order to populate the message pool we need subscriptions.</p>
+</section>
+</section>
+<section id="subscriptions" class="level2">
+<h2 class="anchored" data-anchor-id="subscriptions">Subscriptions</h2>
+<p>The nostr protocol requires clients to make requests (as subscriptions) to the relays in order to get events sent back (in our case, into the <a href="https://armstrys.github.io/nostrfastr/nostr_core.html#messagepool"><code>MessagePool</code></a>). The <code>REQ</code> (request or subscription) query is also clearly outlined in <a href="https://github.com/nostr-protocol/nips/blob/master/01.md#from-client-to-relay-sending-events-and-creating-subscriptions">NIP-01</a>. A request must be labeled with a <code>subscription_id</code> and a series of filters that the relay will use to determine which events it should return. Current options for a single filter are as follow:</p>
+<ul>
+<li><code>ids</code> - a list of event IDs</li>
+<li><code>authors</code> - a list of authors (pubkeys), which could be something like a contact list</li>
+<li><code>kinds</code> - a list of kinds, such as <code>text_notes</code> (1) or <code>set_metadata</code> (0)</li>
+<li><code>tags</code> - a list of tags, like <code>e</code> event or <code>p</code> people tags</li>
+<li><code>since</code> - a time stamp that defines the earliest <code>created_at</code> that should be sent</li>
+<li><code>until</code> - a time stamp that defines the latest <code>created_at</code> that should be sent</li>
+<li><code>limit</code> - a limit of events to return upon initial request to keep the client from being overwhelmed if the query is wide</li>
+</ul>
+<p>A list of filters is provided in a <code>REQ</code> message and the following happens:</p>
+<ul>
+<li>the relay returns all events in past storage that meet the union of all the filter specifications (i.e.&nbsp;each filter is handled separately)</li>
+<li>the relay would then send an <code>End Of Stored Events</code> notice with the <code>subscription_id</code></li>
+<li>the relay will continue to send newly published events that meet the criteria until 1 of the following occurs:
+<ul>
+<li>the websocket is closed (by any measure - intentional closure or client crash)</li>
+<li>no more events are being published because the <code>until</code> clause of a subscription is met</li>
+<li>the client sends a request with the same <code>subscription_id</code> and it overwrites the initial behavior</li>
+<li>the client sends a <code>CLOSE</code> message to close the <code>subscription_id</code></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nostr <span class="im">import</span> <span class="bu">filter</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nostr <span class="im">import</span> subscription</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> uuid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<section id="filter" class="level3">
+<h3 class="anchored" data-anchor-id="filter">Filter</h3>
+<blockquote class="blockquote">
+<pre><code> Filter (ids:list[str]=None, kinds:list[int]=None, authors:list[str]=None,
+         since:int=None, until:int=None, tags:dict[str,list[str]]=None,
+         limit:int=None)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<hr>
+</section>
+<section id="subscription" class="level3">
+<h3 class="anchored" data-anchor-id="subscription">Subscription</h3>
+<blockquote class="blockquote">
+<pre><code> Subscription (id:str, filters:nostr.filter.Filters=None)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>We can create a subscription to request the event we created earlier</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>filters <span class="op">=</span> <span class="bu">filter</span>.Filters([<span class="bu">filter</span>.Filter(ids<span class="op">=</span>[event.<span class="bu">id</span>])])</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>subscription_id <span class="op">=</span> <span class="bu">str</span>(uuid.uuid4())</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>request <span class="op">=</span> [message_type.ClientMessageType.REQUEST, subscription_id]</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>request.extend(filters.to_json_array())</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>message <span class="op">=</span> json.dumps(request)</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(message)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>["REQ", "10000", {"ids": ["290b51301f55bf2ad51dba58e935cd6fbef8b9780c5e557a706c9403ae12b345"]}]</code></pre>
+</div>
+</div>
+<p>Now we can get that from the relay we published it to</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>manager <span class="op">=</span> RelayManager()</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>manager.add_relay(url)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> manager.connection(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}):</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">.5</span>)</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    manager.add_subscription(subscription_id, filters)</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    manager.publish_message(message)</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">.5</span>)</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> manager.message_pool.has_events():</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>        event_msg <span class="op">=</span> manager.message_pool.get_event()</span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f'event received from </span><span class="sc">{</span>event_msg<span class="sc">.</span>url<span class="sc">}</span><span class="ss"> '</span></span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'with subscription id </span><span class="sc">{</span>event_msg<span class="sc">.</span>url<span class="sc">}</span><span class="ch">\n\t</span><span class="ss">'</span></span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'</span><span class="sc">{</span>event_msg<span class="sc">.</span>event<span class="sc">.</span>content<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     ('127.0.0.1', 51244) - "WebSocket /" [accepted]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:36:08,568 - nostr_relay.web - INFO - Accepted 127.0.0.1-eb74 from Origin: http://127.0.0.1:6969</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection open</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-21 09:36:08,577 - websocket - WARNING - websocket connected
+2023-01-21 09:36:11,075 - nostr_relay.db - INFO - 127.0.0.1-eb74/10000 query – events:1 duration:1ms
+event received from ws://127.0.0.1:6969 with subscription id ws://127.0.0.1:6969
+    this is a test
+2023-01-21 09:36:11,577 - nostr_relay.web - INFO - Done 127.0.0.1-eb74. sent: 400 bytes. duration: 3sec</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>INFO:     connection closed</code></pre>
+</div>
+</div>
+<p>We will use the <a href="https://armstrys.github.io/nostrfastr/client.html#client"><code>Client</code></a> class in this package to make subscriptions and publishing events even easier.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

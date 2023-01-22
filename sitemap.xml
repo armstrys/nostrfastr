@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/nostr_core.html</loc>
+    <lastmod>2023-01-22T04:27:42.988Z</lastmod>
+  </url>
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/vanity.html</loc>
+    <lastmod>2023-01-22T04:27:44.048Z</lastmod>
+  </url>
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/notifyr.html</loc>
+    <lastmod>2023-01-22T04:27:44.763Z</lastmod>
+  </url>
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/sentinel_client.html</loc>
+    <lastmod>2023-01-22T04:27:45.327Z</lastmod>
+  </url>
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/client.html</loc>
+    <lastmod>2023-01-22T04:27:46.203Z</lastmod>
+  </url>
+  <url>
+    <loc>https://armstrys.github.io/nostrfastr/index.html</loc>
+    <lastmod>2023-01-22T04:27:47.267Z</lastmod>
+  </url>
+</urlset>

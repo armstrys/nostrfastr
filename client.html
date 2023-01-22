@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="basic client operations not specific to the rebroadcastr client">
+
+<title>nostrfastr - client</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="nostrfastr - client">
+<meta property="og:description" content="basic client operations not specific to the `rebroadcastr` client">
+<meta property="og:site-name" content="nostrfastr">
+<meta name="twitter:title" content="nostrfastr - client">
+<meta name="twitter:description" content="basic client operations not specific to the `rebroadcastr` client">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">nostrfastr</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">client</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">nostrfastr</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nostr_core.html" class="sidebar-item-text sidebar-link">nostr_core</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./client.html" class="sidebar-item-text sidebar-link active">client</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sentinel_client.html" class="sidebar-item-text sidebar-link">sentinel (in progress)</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notifyr.html" class="sidebar-item-text sidebar-link">notifyr</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vanity.html" class="sidebar-item-text sidebar-link">vanity</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#client-initialization" id="toc-client-initialization" class="nav-link active" data-scroll-target="#client-initialization">Client Initialization</a>
+  <ul class="collapse">
+  <li><a href="#client" id="toc-client" class="nav-link" data-scroll-target="#client">Client</a></li>
+  </ul></li>
+  <li><a href="#adding-connection-methods" id="toc-adding-connection-methods" class="nav-link" data-scroll-target="#adding-connection-methods">Adding Connection Methods</a>
+  <ul class="collapse">
+  <li><a href="#client.disconnect" id="toc-client.disconnect" class="nav-link" data-scroll-target="#client.disconnect">Client.disconnect</a></li>
+  <li><a href="#client.connect" id="toc-client.connect" class="nav-link" data-scroll-target="#client.connect">Client.connect</a></li>
+  </ul></li>
+  <li><a href="#publishing-subscriptions" id="toc-publishing-subscriptions" class="nav-link" data-scroll-target="#publishing-subscriptions">Publishing Subscriptions</a>
+  <ul class="collapse">
+  <li><a href="#client.get_notices_from_relay" id="toc-client.get_notices_from_relay" class="nav-link" data-scroll-target="#client.get_notices_from_relay">Client.get_notices_from_relay</a></li>
+  <li><a href="#client.publish_subscription" id="toc-client.publish_subscription" class="nav-link" data-scroll-target="#client.publish_subscription">Client.publish_subscription</a></li>
+  </ul></li>
+  <li><a href="#retrieving-events" id="toc-retrieving-events" class="nav-link" data-scroll-target="#retrieving-events">Retrieving Events</a>
+  <ul class="collapse">
+  <li><a href="#client.insert_event_to_database" id="toc-client.insert_event_to_database" class="nav-link" data-scroll-target="#client.insert_event_to_database">Client.insert_event_to_database</a></li>
+  <li><a href="#client.get_events_pool" id="toc-client.get_events_pool" class="nav-link" data-scroll-target="#client.get_events_pool">Client.get_events_pool</a></li>
+  </ul></li>
+  <li><a href="#end-of-stored-events-notice" id="toc-end-of-stored-events-notice" class="nav-link" data-scroll-target="#end-of-stored-events-notice">End Of Stored Events Notice</a>
+  <ul class="collapse">
+  <li><a href="#client.get_eose_from_relay" id="toc-client.get_eose_from_relay" class="nav-link" data-scroll-target="#client.get_eose_from_relay">Client.get_eose_from_relay</a></li>
+  </ul></li>
+  <li><a href="#publishing-events" id="toc-publishing-events" class="nav-link" data-scroll-target="#publishing-events">Publishing Events</a>
+  <ul class="collapse">
+  <li><a href="#client.check_event_pubkey" id="toc-client.check_event_pubkey" class="nav-link" data-scroll-target="#client.check_event_pubkey">Client.check_event_pubkey</a></li>
+  <li><a href="#client.publish_event" id="toc-client.publish_event" class="nav-link" data-scroll-target="#client.publish_event">Client.publish_event</a></li>
+  </ul></li>
+  <li><a href="#special-methods-for-common-filters-and-events" id="toc-special-methods-for-common-filters-and-events" class="nav-link" data-scroll-target="#special-methods-for-common-filters-and-events">Special Methods for Common Filters and Events</a>
+  <ul class="collapse">
+  <li><a href="#client.event_encrypted_message" id="toc-client.event_encrypted_message" class="nav-link" data-scroll-target="#client.event_encrypted_message">Client.event_encrypted_message</a></li>
+  <li><a href="#client.event_channel_metadata" id="toc-client.event_channel_metadata" class="nav-link" data-scroll-target="#client.event_channel_metadata">Client.event_channel_metadata</a></li>
+  <li><a href="#client.event_channel_mute_user" id="toc-client.event_channel_mute_user" class="nav-link" data-scroll-target="#client.event_channel_mute_user">Client.event_channel_mute_user</a></li>
+  <li><a href="#client.event_channel_hide_message" id="toc-client.event_channel_hide_message" class="nav-link" data-scroll-target="#client.event_channel_hide_message">Client.event_channel_hide_message</a></li>
+  <li><a href="#client.event_channel_message" id="toc-client.event_channel_message" class="nav-link" data-scroll-target="#client.event_channel_message">Client.event_channel_message</a></li>
+  <li><a href="#client.event_channel_metadata-1" id="toc-client.event_channel_metadata-1" class="nav-link" data-scroll-target="#client.event_channel_metadata-1">Client.event_channel_metadata</a></li>
+  <li><a href="#client.event_channel" id="toc-client.event_channel" class="nav-link" data-scroll-target="#client.event_channel">Client.event_channel</a></li>
+  <li><a href="#client.event_reaction" id="toc-client.event_reaction" class="nav-link" data-scroll-target="#client.event_reaction">Client.event_reaction</a></li>
+  <li><a href="#client.event_deletion" id="toc-client.event_deletion" class="nav-link" data-scroll-target="#client.event_deletion">Client.event_deletion</a></li>
+  <li><a href="#client.event_recommended_relay" id="toc-client.event_recommended_relay" class="nav-link" data-scroll-target="#client.event_recommended_relay">Client.event_recommended_relay</a></li>
+  <li><a href="#client.event_text_note" id="toc-client.event_text_note" class="nav-link" data-scroll-target="#client.event_text_note">Client.event_text_note</a></li>
+  <li><a href="#client.event_metadata" id="toc-client.event_metadata" class="nav-link" data-scroll-target="#client.event_metadata">Client.event_metadata</a></li>
+  <li><a href="#client.filter_events_recommended_relays" id="toc-client.filter_events_recommended_relays" class="nav-link" data-scroll-target="#client.filter_events_recommended_relays">Client.filter_events_recommended_relays</a></li>
+  <li><a href="#client.filter_events_authors" id="toc-client.filter_events_authors" class="nav-link" data-scroll-target="#client.filter_events_authors">Client.filter_events_authors</a></li>
+  <li><a href="#client.filter_events_by_id" id="toc-client.filter_events_by_id" class="nav-link" data-scroll-target="#client.filter_events_by_id">Client.filter_events_by_id</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/armstrys/nostrfastr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">client</h1>
+</div>
+
+<div>
+  <div class="description">
+    basic client operations not specific to the <code>rebroadcastr</code> client
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>This notebook will implement and test a barebones client that can easily do the following - manage connections - manage private keys - publish event subscriptions (requests) - retrieve events and save to db - publish events</p>
+<section id="client-initialization" class="level2">
+<h2 class="anchored" data-anchor-id="client-initialization">Client Initialization</h2>
+<p>the basic client initializes with the following - a relay manager from <code>python-nostr</code> - set of relays that will be used for reading and writing (as of now all relays are used for both by default) - a message pool that acts as an incoming queue for messages from the relays - a user account - provided with a private key - able to publish new events - or with only a public key - only able to read and republish existing events - a sqlite database named by the publickey and located on the system user data directory by default - by default events are saved into the database as they are read out of the message queue from the message pool</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L27" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client" class="level3">
+<h3 class="anchored" data-anchor-id="client">Client</h3>
+<blockquote class="blockquote">
+<pre><code> Client (public_key_hex:str=None, private_key_hex:str=None,
+         db_name:str='nostr-data', relay_urls:list=None,
+         ssl_options:dict={}, first_response_only:bool=True)</code></pre>
+</blockquote>
+<p>A basic framework for common operations that a nostr client will need to execute.</p>
+<p>Args: public_key_hex (str, optional): public key to initiate client private_key_hex (str, optional): private key to log in with public key. Defaults to None, in which case client is effectively read only relay_urls (list, optional): provide a list of relay urls. Defaults to None, in which case a default list will be used. ssl_options (dict, optional): ssl options for websocket connection Defaults to empty dict allow_duplicates (bool, optional): whether or not to allow duplicate event ids into the queue from multiple relays. This isn’t fully working yet. Defaults to False.</p>
+<p>Test setting account by private key or public key and handles as expected - note that some uses like the <code>rebroadcastr</code> client don’t need a private key since we aren’t creating new events</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>private_key <span class="op">=</span> PrivateKey()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>public_key <span class="op">=</span> private_key.public_key</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load client with no keys</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE})</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># load client with public key only</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}, public_key_hex<span class="op">=</span>public_key.<span class="bu">hex</span>())</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.public_key.<span class="bu">hex</span>() <span class="op">==</span> public_key.<span class="bu">hex</span>()</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.private_key <span class="kw">is</span> <span class="va">None</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># load client with public key and private key</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}, public_key_hex<span class="op">=</span>public_key.<span class="bu">hex</span>(), private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>())</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.public_key.<span class="bu">hex</span>() <span class="op">==</span> public_key.<span class="bu">hex</span>()</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.private_key.<span class="bu">hex</span>() <span class="op">==</span> private_key.<span class="bu">hex</span>()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># load client with private key only</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE}, private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>())</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.public_key.<span class="bu">hex</span>() <span class="op">==</span> public_key.<span class="bu">hex</span>()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> client.private_key.<span class="bu">hex</span>() <span class="op">==</span> private_key.<span class="bu">hex</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>test adding and removing relays while disconnected</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>relay_urls_1 <span class="op">=</span> [</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr-2.zebedee.cloud'</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://rsslay.fiatjaf.com'</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr-relay.wlvs.space'</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr.orangepill.dev'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr.oxtr.dev'</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>relay_urls_2 <span class="op">=</span> [</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://relay.damus.io'</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://brb.io'</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr-2.zebedee.cloud'</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://rsslay.fiatjaf.com'</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(), relay_urls<span class="op">=</span>relay_urls_1)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">set</span>(relay_urls_1) <span class="op">==</span> <span class="bu">set</span>(client.relay_manager.relays.keys())</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>client.set_relays(relay_urls_2)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">set</span>(relay_urls_2) <span class="op">==</span> <span class="bu">set</span>(client.relay_manager.relays.keys())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="adding-connection-methods" class="level2">
+<h2 class="anchored" data-anchor-id="adding-connection-methods">Adding Connection Methods</h2>
+<p>the connection methods provide an easy, pythonic way to open and close connections with the relay manager in order to perform operations with the client.</p>
+<p>The connections can be opened and closed by calling <code>Client.connect()</code> and <a href="https://armstrys.github.io/nostrfastr/client.html#client.disconnect"><code>Client.disconnect</code></a> respectively. The client also provides a context manager that can be used as:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> Client() <span class="im">as</span> client:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The above code effectively runs the client until it is forced to exit for some interal reason at which point the connections are automatically closed.</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L191" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.disconnect" class="level3">
+<h3 class="anchored" data-anchor-id="client.disconnect">Client.disconnect</h3>
+<blockquote class="blockquote">
+<pre><code> Client.disconnect ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L187" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.connect" class="level3">
+<h3 class="anchored" data-anchor-id="client.connect">Client.connect</h3>
+<blockquote class="blockquote">
+<pre><code> Client.connect ()</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>relay_urls_1 <span class="op">=</span> [</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://rsslay.fiatjaf.com'</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr-relay.wlvs.space'</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr.orangepill.dev'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://nostr.oxtr.dev'</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>relay_urls_2 <span class="op">=</span> [</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://relay.damus.io'</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://brb.io'</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'wss://rsslay.fiatjaf.com'</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(), relay_urls<span class="op">=</span>relay_urls_1,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE})</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># these are not hard asserts because some relays wont connect</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(client.relay_manager.connection_statuses)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    client.set_relays(relay_urls_2)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(client.relay_manager.connection_statuses)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> <span class="bu">any</span>(client.relay_manager.connection_statuses.values())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-14 08:45:02,009 - websocket - WARNING - websocket connected
+2023-01-14 08:45:02,197 - websocket - ERROR - Handshake status 500 Internal Server Error - goodbye
+2023-01-14 08:45:02,397 - websocket - WARNING - websocket connected</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/ryanarmstrong/python/nostrfastr/nostrfastr/nostr.py:172: UserWarning: wss://nostr-relay.wlvs.space is not connected... removing relay.
+  warnings.warn(
+/Users/ryanarmstrong/python/nostrfastr/nostrfastr/nostr.py:172: UserWarning: wss://nostr.oxtr.dev is not connected... removing relay.
+  warnings.warn(</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'wss://nostr.orangepill.dev': True, 'wss://rsslay.fiatjaf.com': True}
+2023-01-14 08:45:04,056 - websocket - WARNING - websocket connected
+2023-01-14 08:45:04,377 - websocket - WARNING - websocket connected
+{'wss://rsslay.fiatjaf.com': True, 'wss://brb.io': True, 'wss://relay.damus.io': True}</code></pre>
+</div>
+</div>
+<p>Make sure that our context manager appropriately raises errors and closes connections</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> test_fail</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-14 08:45:07,057 - websocket - ERROR - Handshake status 503 Service Unavailable - goodbye</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> error_in_context():</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> client:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> Error()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>test_fail(error_in_context)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-14 08:45:07,606 - websocket - WARNING - websocket connected
+2023-01-14 08:45:07,902 - websocket - WARNING - websocket connected
+2023-01-14 08:45:08,183 - websocket - WARNING - websocket connected</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> <span class="bu">any</span>(client.relay_manager.connection_statuses.values())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="publishing-subscriptions" class="level2">
+<h2 class="anchored" data-anchor-id="publishing-subscriptions">Publishing Subscriptions</h2>
+<p>Requests to the relays are most easily understood as subscriptions since each request will continue to receive events to the message pool until the websocket connection is closed or the subscription passes an until criteria. <a href="https://github.com/nostr-protocol/nips/blob/master/01.md#from-client-to-relay-sending-events-and-creating-subscriptions">NIP-01</a> clearly outlines the components of a subscription. Subscriptions are then executed as follows: - the relay runs a query for past events that meet the filter criteria - the events are returned to the client honoring any <code>limit</code> arguments specified - the relay may return an end of stored events (EOSE) notice as described in <a href="https://github.com/nostr-protocol/nips/blob/master/15.md">NIP-15</a> to inform the client that any further events received are newly published events - the relay will continue to return events that meet the subscription filter criteria until one of 3 things happen: - a new subscription is sent with the same <code>subscription_id</code> and overwrites the existing subscription - the client sends a <code>CLOSE</code> message to the relay to close the subscription - the websocket between the client and the relay is closed</p>
+<p>Subscription filters can be created from the <code>Filter</code> class in <code>python-nostr</code> with the arguments as shown below</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L236" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.get_notices_from_relay" class="level3">
+<h3 class="anchored" data-anchor-id="client.get_notices_from_relay">Client.get_notices_from_relay</h3>
+<blockquote class="blockquote">
+<pre><code> Client.get_notices_from_relay ()</code></pre>
+</blockquote>
+<p>calls the _notice_handler method on all notices from relays</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L201" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.publish_subscription" class="level3">
+<h3 class="anchored" data-anchor-id="client.publish_subscription">Client.publish_subscription</h3>
+<blockquote class="blockquote">
+<pre><code> Client.publish_subscription
+                              (filters:Union[nostr.filter.Filter,nostr.fil
+                              ter.Filters], subscription_id:str='724a1d59-
+                              f5bc-452b-8859-61eb6f5da7c2')</code></pre>
+</blockquote>
+<p>publishes a request from a subscription id and a set of filters. Filters can be defined using the request_by_custom_filter method or from a list of preset filters (as of yet to be created):</p>
+<p>Args: request_filters (Filters): list of filters for a subscription subscription_id (str): subscription id to be sent to relay. defaults to a random guid</p>
+<p>below we make and publish a simple subscription that requests posts from Jack Dorsey’s pubkey with a limit of 10. This will initially only return 10 events and then would continue to return new posts from Jack if we left the connection open.</p>
+<p>we can see that <code>python-nostr</code> has also added the subscription to a dictionary of subscriptions for each relay in the relay manager.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>url<span class="op">=</span><span class="st">'ws://127.0.0.1:6969'</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(), relay_urls<span class="op">=</span>[url],</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE})</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>jacks_pubkey <span class="op">=</span> PublicKey.from_npub(<span class="st">'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m'</span>).<span class="bu">hex</span>()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>a_filter <span class="op">=</span> Filter(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    authors<span class="op">=</span>[jacks_pubkey],</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    limit<span class="op">=</span><span class="dv">10</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    subscription_id <span class="op">=</span> <span class="bu">str</span>(uuid.uuid4())</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    client.publish_subscription(filters<span class="op">=</span>a_filter, subscription_id<span class="op">=</span>subscription_id)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> relay <span class="kw">in</span> client.relay_manager:</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> subscription_id <span class="kw">in</span> relay.subscriptions.keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-14 08:45:12,102 - websocket - WARNING - websocket connected</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="retrieving-events" class="level2">
+<h2 class="anchored" data-anchor-id="retrieving-events">Retrieving Events</h2>
+<p>As a result, the same request likely does not need to be made twice as long as the connection is still open. New events for any subscriptions can be retrieved using the <code>get_events</code> method.</p>
+<p>The <code>message_pool</code> also contains notices (effectively plain english errors from the relay) and end of subscription notices, which let you know that the relay is done sending information at the moment (but may resume if more events come in). These different types of events will be handled next. First…</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L266" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.insert_event_to_database" class="level3">
+<h3 class="anchored" data-anchor-id="client.insert_event_to_database">Client.insert_event_to_database</h3>
+<blockquote class="blockquote">
+<pre><code> Client.insert_event_to_database
+                                  (event_msg:nostr.message_pool.EventMessa
+                                  ge)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L257" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.get_events_pool" class="level3">
+<h3 class="anchored" data-anchor-id="client.get_events_pool">Client.get_events_pool</h3>
+<blockquote class="blockquote">
+<pre><code> Client.get_events_pool ()</code></pre>
+</blockquote>
+<p>calls the _event_handler method on all events from relays</p>
+<p>let’s publish the same subscription and get the events. We will clear the events data table of our test database.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(),</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE},</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                db_name<span class="op">=</span><span class="st">'test'</span>, relay_urls<span class="op">=</span>[<span class="st">'wss://relay.damus.io'</span>])</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client.db_conn <span class="im">as</span> con:</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> client.db_name <span class="op">!=</span> <span class="st">'test'</span>:</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f'should not be TRUNCATING a non test database - current database is </span><span class="sc">{</span>client<span class="sc">.</span>db_name<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    con.execute(<span class="ss">f'DELETE FROM events'</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    subscription_id <span class="op">=</span> <span class="bu">str</span>(uuid.uuid4())</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    client.publish_subscription(filters<span class="op">=</span>a_filter, subscription_id<span class="op">=</span>subscription_id)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    client.get_events_pool()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-14 08:45:18,128 - websocket - WARNING - websocket connected</code></pre>
+</div>
+</div>
+<p>See what events we got.</p>
+<blockquote class="blockquote">
+<p><em>Note:</em> there could be more than 10 events received. In testing I got 20 events because two different relays had a different set of events for Jack.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client.db_conn <span class="im">as</span> con:</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_sql(<span class="st">'select * from events'</span>, con)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+Index: 0 entries
+Data columns (total 9 columns):
+ #   Column           Non-Null Count  Dtype 
+---  ------           --------------  ----- 
+ 0   id               0 non-null      object
+ 1   pubkey           0 non-null      object
+ 2   created_at       0 non-null      object
+ 3   kind             0 non-null      object
+ 4   tags             0 non-null      object
+ 5   content          0 non-null      object
+ 6   sig              0 non-null      object
+ 7   subscription_id  0 non-null      object
+ 8   url              0 non-null      object
+dtypes: object(9)
+memory usage: 0.0+ bytes</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="end-of-stored-events-notice" class="level2">
+<h2 class="anchored" data-anchor-id="end-of-stored-events-notice">End Of Stored Events Notice</h2>
+<p>Make sure we have a method to print the end of stored message notice.</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L304" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.get_eose_from_relay" class="level3">
+<h3 class="anchored" data-anchor-id="client.get_eose_from_relay">Client.get_eose_from_relay</h3>
+<blockquote class="blockquote">
+<pre><code> Client.get_eose_from_relay ()</code></pre>
+</blockquote>
+<p>calls the _eose_handler end of subsribtion events from relays</p>
+</section>
+</section>
+<section id="publishing-events" class="level2">
+<h2 class="anchored" data-anchor-id="publishing-events">Publishing Events</h2>
+<p>Make a method that can publish events</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L334" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.check_event_pubkey" class="level3">
+<h3 class="anchored" data-anchor-id="client.check_event_pubkey">Client.check_event_pubkey</h3>
+<blockquote class="blockquote">
+<pre><code> Client.check_event_pubkey (event:nostr.event.Event)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L314" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.publish_event" class="level3">
+<h3 class="anchored" data-anchor-id="client.publish_event">Client.publish_event</h3>
+<blockquote class="blockquote">
+<pre><code> Client.publish_event (event:nostr.event.Event)</code></pre>
+</blockquote>
+<p>publish an event and immediately checks for a notice from the relay in case of an invalid event</p>
+<p>Args: event (Event): <em>description</em></p>
+<p>We will try to publish an event with the wrong public key and assert that it will fail.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(),</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE},</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                db_name<span class="op">=</span><span class="st">'test'</span>, relay_urls<span class="op">=</span>[url])</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>bad_event <span class="op">=</span> Event(public_key<span class="op">=</span>jacks_pubkey, content<span class="op">=</span><span class="st">'this is also a test'</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> error_on_invalid():</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> client:</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        client.publish_event(event<span class="op">=</span>bad_event)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>test_fail(error_on_invalid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-13 19:46:09,749 - websocket - WARNING - websocket connected</code></pre>
+</div>
+</div>
+<p>And now publishing a good event</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>good_event <span class="op">=</span> Event(public_key<span class="op">=</span>client.public_key.<span class="bu">hex</span>(), content<span class="op">=</span><span class="st">'this is also a test'</span>, created_at<span class="op">=</span><span class="bu">int</span>(time.time()))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> good_event.created_at <span class="op">==</span> <span class="bu">int</span>(time.time())</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># publishing events commented out for sake of others</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    client.publish_event(event<span class="op">=</span>good_event)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-13 19:46:11,881 - websocket - WARNING - websocket connected</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="special-methods-for-common-filters-and-events" class="level2">
+<h2 class="anchored" data-anchor-id="special-methods-for-common-filters-and-events">Special Methods for Common Filters and Events</h2>
+<p>below are some methods to help create common filters and events used in the nostr protocol</p>
+<p>See the <a href="https://github.com/nostr-protocol/nips#event-kinds">nostr nips</a> page for a full list of event types and specifications. These events will continue to be built out over time.</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L497" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="client.event_encrypted_message" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_encrypted_message">Client.event_encrypted_message</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_encrypted_message (recipient_hex:str, message:str)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L493" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel_metadata" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel_metadata">Client.event_channel_metadata</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel_metadata ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L489" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel_mute_user" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel_mute_user">Client.event_channel_mute_user</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel_mute_user ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L485" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel_hide_message" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel_hide_message">Client.event_channel_hide_message</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel_hide_message ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L481" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel_message" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel_message">Client.event_channel_message</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel_message ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L493" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel_metadata-1" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel_metadata-1">Client.event_channel_metadata</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel_metadata ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L473" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_channel" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_channel">Client.event_channel</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_channel ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L469" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_reaction" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_reaction">Client.event_reaction</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_reaction ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L450" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_deletion" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_deletion">Client.event_deletion</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_deletion (event_ids:Union[str,list], reason:str)</code></pre>
+</blockquote>
+<p>event to delete a single event by id</p>
+<p>Args: event_ids (str|list): event id as string or list of event ids reason (str): a reason for deletion provided by the user</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L446" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_recommended_relay" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_recommended_relay">Client.event_recommended_relay</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_recommended_relay (relay_list)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L432" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_text_note" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_text_note">Client.event_text_note</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_text_note (text:str)</code></pre>
+</blockquote>
+<p>create a text not event</p>
+<p>Args: text (str): text for nostr note to be published</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L398" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.event_metadata" class="level3">
+<h3 class="anchored" data-anchor-id="client.event_metadata">Client.event_metadata</h3>
+<blockquote class="blockquote">
+<pre><code> Client.event_metadata (name:str=None, about:str=None, picture:str=None)</code></pre>
+</blockquote>
+<p><em>summary</em></p>
+<p>Args: self (Client): <em>description</em> name (str, optional): profile name. Defaults to None. about (str, optional): profile about me. Defaults to None. picture (str, optional): url to profile picture. Defaults to None.</p>
+<p>Returns: Event: Event to publish for a metadata update</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L380" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.filter_events_recommended_relays" class="level3">
+<h3 class="anchored" data-anchor-id="client.filter_events_recommended_relays">Client.filter_events_recommended_relays</h3>
+<blockquote class="blockquote">
+<pre><code> Client.filter_events_recommended_relays (authors:Union[str,list])</code></pre>
+</blockquote>
+<p>build a filter from authors</p>
+<p>Args: authors (Union[str,list]): an author or a list of authors to request</p>
+<p>Returns: Filter: A filter object to use with a subscription</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L362" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.filter_events_authors" class="level3">
+<h3 class="anchored" data-anchor-id="client.filter_events_authors">Client.filter_events_authors</h3>
+<blockquote class="blockquote">
+<pre><code> Client.filter_events_authors (authors:Union[str,list])</code></pre>
+</blockquote>
+<p>build a filter from authors</p>
+<p>Args: authors (Union[str,list]): an author or a list of authors to request</p>
+<p>Returns: Filter: A filter object to use with a subscription</p>
+<hr>
+<p><a href="https://github.com/armstrys/nostrfastr/blob/main/nostrfastr/client.py#L346" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="client.filter_events_by_id" class="level3">
+<h3 class="anchored" data-anchor-id="client.filter_events_by_id">Client.filter_events_by_id</h3>
+<blockquote class="blockquote">
+<pre><code> Client.filter_events_by_id (ids:Union[str,list])</code></pre>
+</blockquote>
+<p>build a filter from event ids</p>
+<p>Args: ids (Union[str,list]): an event id or a list of event ids to request</p>
+<p>Returns: Filter: A filter object to use with a subscription</p>
+<p>Let’s try to do a metadata update</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>metadata_update <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    client.event_metadata(name<span class="op">=</span><span class="st">'python-nostr-testacct'</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>                          about<span class="op">=</span><span class="st">'i am a robot - dont mind me'</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>                          picture<span class="op">=</span><span class="st">'https://cdn-icons-png.flaticon.com/256/7603/7603393.png'</span>)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># publishing events commented out for sake of others</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    client.publish_event(metadata_update)</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(metadata_update.to_json_object())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-13 19:46:15,915 - websocket - WARNING - websocket connected
+{'id': '28420f2a726bcc46ba24660e167c276ee1e6231d9b70bab68e8d1d60315dfbee', 'pubkey': 'c5597eb728296cf5a6d32aae47237e6a6b5b4ab0fce254ecbadb63aa51dc9a52', 'created_at': 1673667975, 'kind': &lt;EventKind.SET_METADATA: 0&gt;, 'tags': [], 'content': '{"name": "python-nostr-testacct", "about": "i am a robot - dont mind me", "picture": "https://cdn-icons-png.flaticon.com/256/7603/7603393.png"}', 'sig': '07cdad3ac25019e88483ede586762c54eb045f1f7d73b25320c160b6685ff21de8070c4b284b79946d7712094bfb199152b82c7c851a6ee555c4ac011d2ea49a'}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(private_key_hex<span class="op">=</span>private_key.<span class="bu">hex</span>(),</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                ssl_options<span class="op">=</span>{<span class="st">'cert_reqs'</span>: ssl.CERT_NONE},</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>                db_name<span class="op">=</span><span class="st">'test'</span>, relay_urls<span class="op">=</span>[<span class="st">'wss://relay.damus.io'</span>])</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> client:</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    new_filter <span class="op">=</span> client.filter_events_recommended_relays(authors<span class="op">=</span><span class="st">'c80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720'</span>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    subscription_id <span class="op">=</span> <span class="bu">str</span>(uuid.uuid4())</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    client.publish_subscription(filters<span class="op">=</span>new_filter, subscription_id<span class="op">=</span>subscription_id)</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="dv">2</span>)</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(client.relay_manager.relays)</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>    client.get_events_pool()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2023-01-13 19:55:56,805 - websocket - WARNING - websocket connected
+{'wss://relay.damus.io': {
+  "url": "wss://relay.damus.io",
+  "policy": {
+    "read": true,
+    "write": true
+  },
+  "subscriptions": [
+    {
+      "id": "2ebf6fc4-d414-4eac-9401-aca91fae086f",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "478279db-770a-4a01-9497-a6b51de8fba7",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "244b13de-f8c0-4285-bcaa-2645b51cf31d",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "46b6147a-b0f4-40c3-ac39-b92399d33926",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "1d3eecd2-c1f8-4ee4-a8fe-c09d4202ff04",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "125adb08-a146-4069-82e1-452d443052ef",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "14599812-338b-4e4e-b538-21693423b5fa",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "994a764c-8bd4-4c23-8a81-79351bf40da7",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "42f466d7-d182-4fc4-b045-ea4fd2927b9c",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "73b05f9a-0939-419a-b1b8-6c9187573bee",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "93712053-bc4d-48da-9b19-9d11c024962e",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "1d874191-1e1b-4fd6-9eb9-72bd36e820e3",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "ab59d40d-fbc4-4b27-954f-98bc03b9d627",
+      "filters": [
+        {
+          "authors": [
+            "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+          ],
+          "limit": 10
+        }
+      ]
+    },
+    {
+      "id": "70e45963-6109-4ae9-8f72-69808dad1885",
+      "filters": [
+        {
+          "kinds": [
+            2
+          ],
+          "authors": [
+            "c80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "511a38b8-d5e7-4d8f-a8c8-bbaae4c038c2",
+      "filters": [
+        {
+          "kinds": [
+            2
+          ],
+          "authors": [
+            "c80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c7590d75-6b51-44e8-a1c9-fe168c4dd075",
+      "filters": [
+        {
+          "kinds": [
+            2
+          ],
+          "authors": [
+            "c80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7a1f2fd0-9306-463d-8f29-2f7e1e3e2e68",
+      "filters": [
+        {
+          "kinds": [
+            2
+          ],
+          "authors": [
+            "c80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "68db2083-562e-4a55-a9f2-c61895431776",
+      "filters": [
+        {
+          "kinds": [
+            2
+          ],
+          "authors": [
+            "cc80b5248fbe8f392bc3ba45091fb4e6e2b5872387601bf90f53992366b30d720"
+          ]
+        }
+      ]
+    }
+  ]
+}}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>pd.read_sql(<span class="st">'select * from events'</span>,con<span class="op">=</span>client.db_conn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>id</th>
+      <th>pubkey</th>
+      <th>created_at</th>
+      <th>kind</th>
+      <th>tags</th>
+      <th>content</th>
+      <th>sig</th>
+      <th>subscription_id</th>
+      <th>url</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
