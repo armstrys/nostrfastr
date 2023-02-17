@@ -1,6 +1,7 @@
 DEBUG: false
 
-db_filename: ../nostr-relay/nostr.sqlite3
+storage:
+  sqlalchemy.url: sqlite+aiosqlite:///path/to/db.sqlite3
 
 relay_name: python relay
 relay_description: relay written in python
